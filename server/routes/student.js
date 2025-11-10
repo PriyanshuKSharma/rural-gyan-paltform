@@ -4,6 +4,7 @@ const Student = require('../models/Student');
 const Quiz = require('../models/Quiz');
 const Classroom = require('../models/Classroom');
 const { auth, authorize } = require('../middlewares/auth');
+const AITutorService = require('../ai_tutor/aiService');
 
 const router = express.Router();
 
@@ -181,30 +182,30 @@ router.post('/submit-quiz/:quizId', [
 });
 
 // AI Tutor chat
-router.post('/ai-tutor', [
-  body('message').notEmpty().trim()
-], async (req, res) => {
+router.post('/ai-tutor', async (req, res) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+    const { message } = req.body;
+    
+    if (!message || message.trim() === '') {
+      return res.status(400).json({ message: 'Message is required' });
     }
 
-    const { message } = req.body;
-
-    // This would integrate with OpenAI API
-    // For now, return a mock response
-    const mockResponse = `I understand you're asking about "${message}". As your AI tutor, I'm here to help you learn. Could you please provide more specific details about what you'd like to understand?`;
+    const result = await AITutorService.processQuery(req.user.id, message.trim());
 
     res.json({
       success: true,
       data: {
-        response: mockResponse,
+        response: result.response,
+        conversationId: result.conversationId,
         timestamp: new Date()
       }
     });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('AI Tutor Error:', error);
+    res.status(500).json({ 
+      message: 'Failed to get AI response', 
+      error: error.message 
+    });
   }
 });
 
