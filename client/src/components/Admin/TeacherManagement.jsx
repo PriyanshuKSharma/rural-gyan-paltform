@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Eye, Search } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Search, UserCheck, UserX } from 'lucide-react';
 import { adminAPI } from '../../services/api';
 import LoadingSpinner from '../Common/LoadingSpinner';
+import TeacherModal from './TeacherModal';
+import TeacherDetailModal from './TeacherDetailModal';
 import toast from 'react-hot-toast';
 
 const TeacherManagement = () => {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedTeacher, setSelectedTeacher] = useState(null);
 
   useEffect(() => {
     fetchTeachers();
@@ -30,11 +34,42 @@ const TeacherManagement = () => {
 
     try {
       await adminAPI.deleteTeacher(teacherId);
-      setTeachers(teachers.filter(t => t._id !== teacherId));
+      fetchTeachers();
       toast.success('Teacher deleted successfully');
     } catch (error) {
       toast.error('Failed to delete teacher');
     }
+  };
+
+  const handleEditTeacher = (teacher) => {
+    setSelectedTeacher(teacher);
+    setShowModal(true);
+  };
+
+  const handleCreateTeacher = () => {
+    setSelectedTeacher(null);
+    setShowModal(true);
+  };
+
+  const handleModalSuccess = () => {
+    fetchTeachers();
+    setShowModal(false);
+    setSelectedTeacher(null);
+  };
+
+  const handleToggleStatus = async (teacherId, currentStatus) => {
+    try {
+      await adminAPI.toggleTeacherStatus(teacherId);
+      fetchTeachers();
+      toast.success(`Teacher ${currentStatus ? 'deactivated' : 'activated'} successfully`);
+    } catch (error) {
+      toast.error('Failed to update teacher status');
+    }
+  };
+
+  const handleViewDetails = (teacher) => {
+    setSelectedTeacher(teacher);
+    setShowDetailModal(true);
   };
 
   const filteredTeachers = teachers.filter(teacher =>
@@ -56,7 +91,7 @@ const TeacherManagement = () => {
           <p className="text-gray-600 dark:text-gray-400">Manage teachers and their assignments</p>
         </div>
         <button
-          onClick={() => setShowCreateModal(true)}
+          onClick={handleCreateTeacher}
           className="btn-primary flex items-center space-x-2"
         >
           <Plus size={20} />
@@ -143,11 +178,29 @@ const TeacherManagement = () => {
                   </td>
                   <td className="table-cell">
                     <div className="flex items-center space-x-2">
-                      <button className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg">
+                      <button 
+                        onClick={() => handleViewDetails(teacher)}
+                        className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg"
+                        title="View Details"
+                      >
                         <Eye size={16} />
                       </button>
-                      <button className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg">
+                      <button 
+                        onClick={() => handleEditTeacher(teacher)}
+                        className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg"
+                      >
                         <Edit size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleToggleStatus(teacher._id, teacher.userId?.isActive)}
+                        className={`p-2 rounded-lg ${
+                          teacher.userId?.isActive
+                            ? 'text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20'
+                            : 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'
+                        }`}
+                        title={teacher.userId?.isActive ? 'Deactivate' : 'Activate'}
+                      >
+                        {teacher.userId?.isActive ? <UserX size={16} /> : <UserCheck size={16} />}
                       </button>
                       <button
                         onClick={() => handleDeleteTeacher(teacher._id)}
@@ -170,6 +223,21 @@ const TeacherManagement = () => {
           <div className="text-gray-400 mb-4">No teachers found</div>
         </div>
       )}
+
+      {/* Teacher Modal */}
+      <TeacherModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        teacher={selectedTeacher}
+        onSuccess={handleModalSuccess}
+      />
+
+      {/* Teacher Detail Modal */}
+      <TeacherDetailModal
+        isOpen={showDetailModal}
+        onClose={() => setShowDetailModal(false)}
+        teacher={selectedTeacher}
+      />
     </div>
   );
 };
