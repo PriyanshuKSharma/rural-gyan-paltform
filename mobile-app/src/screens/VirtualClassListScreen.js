@@ -7,10 +7,12 @@ import {
   StyleSheet,
   RefreshControl,
   Alert,
+  StatusBar,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useAuth } from '../context/AuthContext';
 import { apiService } from '../services/apiService';
+import { COLORS, SHADOWS } from '../utils/theme';
 
 const VirtualClassListScreen = ({ navigation }) => {
   const [classes, setClasses] = useState([]);
@@ -31,7 +33,7 @@ const VirtualClassListScreen = ({ navigation }) => {
       const response = await apiService.get(endpoint);
       setClasses(response.data.data || []);
     } catch (error) {
-      Alert.alert('Error', 'Failed to fetch classes');
+      Alert.alert('ERROR', 'FAILED TO FETCH CLASSES');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -48,7 +50,7 @@ const VirtualClassListScreen = ({ navigation }) => {
       await apiService.patch(`/virtual-class/${classId}/start`);
       navigation.navigate('VirtualClassRoom', { classId });
     } catch (error) {
-      Alert.alert('Error', 'Failed to start class');
+      Alert.alert('ERROR', 'FAILED TO START CLASS');
     }
   };
 
@@ -57,16 +59,16 @@ const VirtualClassListScreen = ({ navigation }) => {
       await apiService.post(`/virtual-class/${classId}/join`);
       navigation.navigate('VirtualClassRoom', { classId });
     } catch (error) {
-      Alert.alert('Error', error.response?.data?.message || 'Failed to join class');
+      Alert.alert('ERROR', error.response?.data?.message || 'FAILED TO JOIN CLASS');
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'scheduled': return '#f59e0b';
-      case 'live': return '#10b981';
-      case 'ended': return '#6b7280';
-      default: return '#6b7280';
+      case 'scheduled': return COLORS.warning;
+      case 'live': return COLORS.error;
+      case 'ended': return COLORS.textSecondary;
+      default: return COLORS.textSecondary;
     }
   };
 
@@ -74,16 +76,30 @@ const VirtualClassListScreen = ({ navigation }) => {
     <View style={styles.classCard}>
       <View style={styles.classHeader}>
         <Text style={styles.classTitle}>{item.title}</Text>
-        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}>
-          <Text style={styles.statusText}>{item.status.toUpperCase()}</Text>
+        <View style={[styles.statusBadge, { borderColor: getStatusColor(item.status) }]}>
+          <View style={[styles.statusDot, { backgroundColor: getStatusColor(item.status) }]} />
+          <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>
+            {item.status.toUpperCase()}
+          </Text>
         </View>
       </View>
 
-      <Text style={styles.classSubject}>{item.subject} - Grade {item.grade}</Text>
-      <Text style={styles.classTime}>
-        {new Date(item.scheduledAt).toLocaleString()}
-      </Text>
-      <Text style={styles.classDuration}>{item.duration} minutes</Text>
+      <View style={styles.infoRow}>
+        <Icon name="class" size={16} color={COLORS.primary} />
+        <Text style={styles.classSubject}>{item.subject} - GRADE {item.grade}</Text>
+      </View>
+
+      <View style={styles.infoRow}>
+        <Icon name="schedule" size={16} color={COLORS.secondary} />
+        <Text style={styles.classTime}>
+          {new Date(item.scheduledAt).toLocaleString()}
+        </Text>
+      </View>
+
+      <View style={styles.infoRow}>
+        <Icon name="timer" size={16} color={COLORS.warning} />
+        <Text style={styles.classDuration}>{item.duration} MINS</Text>
+      </View>
 
       {item.description && (
         <Text style={styles.classDescription}>{item.description}</Text>
@@ -97,8 +113,8 @@ const VirtualClassListScreen = ({ navigation }) => {
                 style={[styles.actionButton, styles.startButton]}
                 onPress={() => startClass(item._id)}
               >
-                <Icon name="play-arrow" size={20} color="white" />
-                <Text style={styles.actionButtonText}>Start Class</Text>
+                <Icon name="play-arrow" size={20} color={COLORS.background} />
+                <Text style={styles.actionButtonText}>START CLASS</Text>
               </TouchableOpacity>
             )}
             {item.status === 'live' && (
@@ -106,8 +122,8 @@ const VirtualClassListScreen = ({ navigation }) => {
                 style={[styles.actionButton, styles.joinButton]}
                 onPress={() => navigation.navigate('VirtualClassRoom', { classId: item._id })}
               >
-                <Icon name="video-call" size={20} color="white" />
-                <Text style={styles.actionButtonText}>Join Class</Text>
+                <Icon name="video-call" size={20} color={COLORS.background} />
+                <Text style={styles.actionButtonText}>JOIN CLASS</Text>
               </TouchableOpacity>
             )}
             {(item.status === 'ended' || item.status === 'cancelled') && (
@@ -115,8 +131,8 @@ const VirtualClassListScreen = ({ navigation }) => {
                 style={[styles.actionButton, styles.attendanceButton]}
                 onPress={() => navigation.navigate('Attendance', { classId: item._id })}
               >
-                <Icon name="group" size={20} color="white" />
-                <Text style={styles.actionButtonText}>Attendance</Text>
+                <Icon name="group" size={20} color={COLORS.text} />
+                <Text style={styles.actionButtonTextOutline}>ATTENDANCE</Text>
               </TouchableOpacity>
             )}
           </>
@@ -127,14 +143,14 @@ const VirtualClassListScreen = ({ navigation }) => {
                 style={[styles.actionButton, styles.joinButton]}
                 onPress={() => joinClass(item._id)}
               >
-                <Icon name="video-call" size={20} color="white" />
-                <Text style={styles.actionButtonText}>Join Live Class</Text>
+                <Icon name="video-call" size={20} color={COLORS.background} />
+                <Text style={styles.actionButtonText}>JOIN LIVE CLASS</Text>
               </TouchableOpacity>
             )}
             {item.status === 'scheduled' && (
               <View style={[styles.actionButton, styles.scheduledButton]}>
-                <Icon name="schedule" size={20} color="#6b7280" />
-                <Text style={[styles.actionButtonText, { color: '#6b7280' }]}>Scheduled</Text>
+                <Icon name="schedule" size={20} color={COLORS.textSecondary} />
+                <Text style={[styles.actionButtonText, { color: COLORS.textSecondary }]}>SCHEDULED</Text>
               </View>
             )}
           </>
@@ -145,18 +161,30 @@ const VirtualClassListScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
+      
+      {/* Background Decorative Elements */}
+      <View style={styles.bgGlowTop} />
+
       <FlatList
         data={classes}
         renderItem={renderClassItem}
         keyExtractor={(item) => item._id}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl 
+            refreshing={refreshing} 
+            onRefresh={onRefresh} 
+            tintColor={COLORS.primary}
+            colors={[COLORS.primary]}
+          />
         }
         contentContainerStyle={styles.listContainer}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Icon name="video-call" size={64} color="#cbd5e1" />
-            <Text style={styles.emptyText}>No classes available</Text>
+            <View style={styles.emptyIconContainer}>
+              <Icon name="video-call" size={48} color={COLORS.textSecondary} />
+            </View>
+            <Text style={styles.emptyText}>NO CLASSES AVAILABLE</Text>
           </View>
         }
       />
@@ -167,95 +195,138 @@ const VirtualClassListScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f6f7f8',
+    backgroundColor: COLORS.background,
+  },
+  bgGlowTop: {
+    position: 'absolute',
+    top: -100,
+    right: -100,
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: COLORS.primary,
+    opacity: 0.05,
   },
   listContainer: {
     padding: 16,
   },
   classCard: {
-    backgroundColor: 'white',
-    borderRadius: 12,
+    backgroundColor: 'rgba(31, 41, 55, 0.5)',
+    borderWidth: 1,
+    borderColor: COLORS.border,
     padding: 16,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    ...SHADOWS.card,
   },
   classHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.1)',
+    paddingBottom: 12,
   },
   classTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1e293b',
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: COLORS.primary,
     flex: 1,
+    letterSpacing: 1,
   },
   statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 12,
+    borderWidth: 1,
+    borderRadius: 4,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  statusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: 6,
   },
   statusText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: 10,
+    fontWeight: 'bold',
+    letterSpacing: 1,
   },
-  classSubject: {
-    fontSize: 14,
-    color: '#64748b',
-    marginBottom: 4,
-  },
-  classTime: {
-    fontSize: 14,
-    color: '#64748b',
-    marginBottom: 4,
-  },
-  classDuration: {
-    fontSize: 14,
-    color: '#64748b',
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 8,
   },
+  classSubject: {
+    fontSize: 12,
+    color: COLORS.text,
+    marginLeft: 8,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+  },
+  classTime: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    marginLeft: 8,
+    letterSpacing: 0.5,
+  },
+  classDuration: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    marginLeft: 8,
+    letterSpacing: 0.5,
+  },
   classDescription: {
-    fontSize: 14,
-    color: '#475569',
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    marginTop: 8,
     marginBottom: 16,
+    fontStyle: 'italic',
   },
   classActions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
+    marginTop: 8,
   },
   actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingVertical: 10,
     marginLeft: 8,
+    ...SHADOWS.neon,
   },
   startButton: {
-    backgroundColor: '#10b981',
+    backgroundColor: COLORS.success,
   },
   joinButton: {
-    backgroundColor: '#137fec',
+    backgroundColor: COLORS.primary,
   },
   attendanceButton: {
-    backgroundColor: '#6b7280',
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: COLORS.text,
   },
   scheduledButton: {
-    backgroundColor: '#f1f5f9',
+    backgroundColor: 'rgba(255,255,255,0.05)',
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: COLORS.border,
   },
   actionButtonText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: '600',
-    marginLeft: 4,
+    color: COLORS.background,
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginLeft: 8,
+    letterSpacing: 1,
+  },
+  actionButtonTextOutline: {
+    color: COLORS.text,
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginLeft: 8,
+    letterSpacing: 1,
   },
   emptyContainer: {
     flex: 1,
@@ -263,10 +334,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 100,
   },
+  emptyIconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(31, 41, 55, 0.5)',
+    marginBottom: 16,
+  },
   emptyText: {
-    fontSize: 16,
-    color: '#64748b',
-    marginTop: 16,
+    fontSize: 14,
+    color: COLORS.textSecondary,
+    fontWeight: 'bold',
+    letterSpacing: 1,
   },
 });
 
