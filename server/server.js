@@ -20,7 +20,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: [process.env.CLIENT_URL || "http://localhost:3000", "http://localhost:5500", "http://127.0.0.1:5500", "null"],
+    origin: [process.env.CLIENT_URL || "http://localhost:3000", "http://localhost:3001", "http://localhost:5500", "http://127.0.0.1:5500", "null"],
     methods: ["GET", "POST"]
   }
 });
@@ -31,7 +31,7 @@ connectDB();
 // Security middleware
 app.use(helmet());
 app.use(cors({
-  origin: [process.env.CLIENT_URL || "http://localhost:3000", "http://localhost:5500", "http://127.0.0.1:5500", "null"],
+  origin: [process.env.CLIENT_URL || "http://localhost:3001", "http://localhost:3000", "http://localhost:5500", "http://127.0.0.1:5500", "null"],
   credentials: true
 }));
 
