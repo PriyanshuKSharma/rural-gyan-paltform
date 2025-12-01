@@ -17,52 +17,59 @@ const Header = ({ onMenuClick, title }) => {
   };
 
   return (
-    <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-      <div className="flex items-center justify-between px-4 py-3">
+    <header className="bg-gray-900/80 backdrop-blur-md border-b border-cyan-900/30 sticky top-0 z-40">
+      <div className="flex items-center justify-between px-6 py-4">
         {/* Left side */}
         <div className="flex items-center space-x-4">
           <button
             onClick={onMenuClick}
-            className="lg:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="lg:hidden p-2 text-cyan-500 hover:text-white hover:bg-white/5 rounded transition-colors"
           >
-            <Menu size={20} className="text-gray-600 dark:text-gray-300" />
+            <Menu size={24} />
           </button>
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-            {title || t('dashboard')}
-          </h1>
+          <div className="flex items-center gap-3">
+            <div className="h-6 w-1 bg-cyan-500 rounded-full shadow-[0_0_10px_rgba(0,243,255,0.5)]"></div>
+            <h1 className="text-xl font-bold text-white uppercase tracking-wider font-mono">
+              {title || t('dashboard')}
+            </h1>
+          </div>
         </div>
 
         {/* Right side */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-4">
           {/* Language Toggle */}
           <button
             onClick={toggleLanguage}
-            className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 rounded border border-cyan-900/50 text-cyan-500 hover:bg-cyan-900/20 hover:border-cyan-500/50 transition-all group"
             title="Change Language"
           >
-            <Globe size={18} className="text-gray-600 dark:text-gray-300" />
+            <Globe size={16} className="group-hover:animate-spin-slow" />
+            <span className="text-xs font-mono font-bold">{i18n.language.toUpperCase()}</span>
           </button>
 
           {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="p-2 text-cyan-500 hover:text-white hover:bg-white/5 rounded transition-colors"
             title="Toggle Theme"
           >
             {isDark ? (
-              <Sun size={18} className="text-gray-600 dark:text-gray-300" />
+              <Sun size={20} />
             ) : (
-              <Moon size={18} className="text-gray-600 dark:text-gray-300" />
+              <Moon size={20} />
             )}
           </button>
 
           {/* Notifications */}
-          <button className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative">
-            <Bell size={18} className="text-gray-600 dark:text-gray-300" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+          <button className="p-2 text-cyan-500 hover:text-white hover:bg-white/5 rounded transition-colors relative group">
+            <Bell size={20} className="group-hover:animate-swing" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full shadow-[0_0_10px_rgba(239,68,68,0.5)] animate-pulse"></span>
           </button>
         </div>
       </div>
+      
+      {/* Bottom decorative line */}
+      <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent"></div>
     </header>
   );
 };
