@@ -7,10 +7,12 @@ import {
   StyleSheet,
   Dimensions,
   RefreshControl,
+  StatusBar,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useAuth } from '../context/AuthContext';
 import { apiService } from '../services/apiService';
+import { COLORS, SHADOWS } from '../utils/theme';
 
 const { width } = Dimensions.get('window');
 
@@ -54,32 +56,32 @@ const DashboardScreen = ({ navigation }) => {
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good Morning';
-    if (hour < 18) return 'Good Afternoon';
-    return 'Good Evening';
+    if (hour < 12) return 'SYSTEM INITIALIZED';
+    if (hour < 18) return 'SYSTEM ACTIVE';
+    return 'SYSTEM STANDBY';
   };
 
   const getQuickActions = () => {
     if (user?.role === 'student') {
       return [
-        { title: 'Join Class', icon: 'video-call', color: '#10b981', route: 'VirtualClassList' },
-        { title: 'AI Tutor', icon: 'psychology', color: '#8b5cf6', route: 'AITutor' },
-        { title: 'Materials', icon: 'library-books', color: '#f59e0b', route: 'Materials' },
-        { title: 'Code Editor', icon: 'code', color: '#ef4444', route: 'CodeEditor' },
+        { title: 'JOIN CLASS', icon: 'video-call', color: COLORS.primary, route: 'VirtualClassList' },
+        { title: 'AI TUTOR', icon: 'psychology', color: COLORS.secondary, route: 'AITutor' },
+        { title: 'MATERIALS', icon: 'library-books', color: COLORS.warning, route: 'Materials' },
+        { title: 'CODE EDITOR', icon: 'code', color: COLORS.error, route: 'CodeEditor' },
       ];
     } else if (user?.role === 'teacher') {
       return [
-        { title: 'My Classes', icon: 'video-call', color: '#10b981', route: 'VirtualClassList' },
-        { title: 'Create Quiz', icon: 'quiz', color: '#8b5cf6', route: 'CreateQuiz' },
-        { title: 'Students', icon: 'people', color: '#f59e0b', route: 'Students' },
-        { title: 'Analytics', icon: 'analytics', color: '#ef4444', route: 'Analytics' },
+        { title: 'MY CLASSES', icon: 'video-call', color: COLORS.primary, route: 'VirtualClassList' },
+        { title: 'CREATE QUIZ', icon: 'quiz', color: COLORS.secondary, route: 'CreateQuiz' },
+        { title: 'STUDENTS', icon: 'people', color: COLORS.warning, route: 'Students' },
+        { title: 'ANALYTICS', icon: 'analytics', color: COLORS.error, route: 'Analytics' },
       ];
     } else {
       return [
-        { title: 'Teachers', icon: 'people', color: '#10b981', route: 'Teachers' },
-        { title: 'Students', icon: 'school', color: '#8b5cf6', route: 'Students' },
-        { title: 'Analytics', icon: 'analytics', color: '#f59e0b', route: 'Analytics' },
-        { title: 'Reports', icon: 'assessment', color: '#ef4444', route: 'Reports' },
+        { title: 'TEACHERS', icon: 'people', color: COLORS.primary, route: 'Teachers' },
+        { title: 'STUDENTS', icon: 'school', color: COLORS.secondary, route: 'Students' },
+        { title: 'ANALYTICS', icon: 'analytics', color: COLORS.warning, route: 'Analytics' },
+        { title: 'REPORTS', icon: 'assessment', color: COLORS.error, route: 'Reports' },
       ];
     }
   };
@@ -87,120 +89,147 @@ const DashboardScreen = ({ navigation }) => {
   const getStatsCards = () => {
     if (user?.role === 'student') {
       return [
-        { title: 'Total Classes', value: stats.totalClasses || 0, icon: 'video-call', color: '#3b82f6' },
-        { title: 'Upcoming', value: stats.upcomingClasses || 0, icon: 'schedule', color: '#10b981' },
-        { title: 'Assignments', value: stats.completedAssignments || 0, icon: 'assignment', color: '#f59e0b' },
-        { title: 'Progress', value: '85%', icon: 'trending-up', color: '#8b5cf6' },
+        { title: 'CLASSES', value: stats.totalClasses || 0, icon: 'video-call', color: COLORS.primary },
+        { title: 'UPCOMING', value: stats.upcomingClasses || 0, icon: 'schedule', color: COLORS.success },
+        { title: 'ASSIGNMENTS', value: stats.completedAssignments || 0, icon: 'assignment', color: COLORS.warning },
+        { title: 'PROGRESS', value: '85%', icon: 'trending-up', color: COLORS.secondary },
       ];
     } else if (user?.role === 'teacher') {
       return [
-        { title: 'My Classes', value: stats.totalClasses || 0, icon: 'video-call', color: '#3b82f6' },
-        { title: 'Students', value: stats.totalStudents || 0, icon: 'people', color: '#10b981' },
-        { title: 'Quizzes', value: stats.totalQuizzes || 0, icon: 'quiz', color: '#f59e0b' },
-        { title: 'Attendance', value: '92%', icon: 'how-to-reg', color: '#8b5cf6' },
+        { title: 'CLASSES', value: stats.totalClasses || 0, icon: 'video-call', color: COLORS.primary },
+        { title: 'STUDENTS', value: stats.totalStudents || 0, icon: 'people', color: COLORS.success },
+        { title: 'QUIZZES', value: stats.totalQuizzes || 0, icon: 'quiz', color: COLORS.warning },
+        { title: 'ATTENDANCE', value: '92%', icon: 'how-to-reg', color: COLORS.secondary },
       ];
     } else {
       return [
-        { title: 'Total Users', value: stats.totalUsers || 0, icon: 'people', color: '#3b82f6' },
-        { title: 'Teachers', value: stats.totalTeachers || 0, icon: 'person', color: '#10b981' },
-        { title: 'Students', value: stats.totalStudents || 0, icon: 'school', color: '#f59e0b' },
-        { title: 'Classes', value: stats.totalClasses || 0, icon: 'video-call', color: '#8b5cf6' },
+        { title: 'USERS', value: stats.totalUsers || 0, icon: 'people', color: COLORS.primary },
+        { title: 'TEACHERS', value: stats.totalTeachers || 0, icon: 'person', color: COLORS.success },
+        { title: 'STUDENTS', value: stats.totalStudents || 0, icon: 'school', color: COLORS.warning },
+        { title: 'CLASSES', value: stats.totalClasses || 0, icon: 'video-call', color: COLORS.secondary },
       ];
     }
   };
 
   return (
-    <ScrollView 
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
-      {/* Header */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.greeting}>{getGreeting()}</Text>
-          <Text style={styles.userName}>{user?.name || user?.username}</Text>
-          <Text style={styles.userRole}>{user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1)}</Text>
-        </View>
-        <TouchableOpacity style={styles.profileButton}>
-          <Icon name="account-circle" size={40} color="#64748b" />
-        </TouchableOpacity>
-      </View>
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
+      
+      {/* Background Decorative Elements */}
+      <View style={styles.bgGlowTop} />
 
-      {/* Stats Cards */}
-      <View style={styles.statsContainer}>
-        {getStatsCards().map((stat, index) => (
-          <View key={index} style={styles.statCard}>
-            <View style={[styles.statIcon, { backgroundColor: `${stat.color}20` }]}>
-              <Icon name={stat.icon} size={24} color={stat.color} />
-            </View>
-            <Text style={styles.statValue}>{stat.value}</Text>
-            <Text style={styles.statTitle}>{stat.title}</Text>
+      <ScrollView 
+        style={styles.scrollView}
+        refreshControl={
+          <RefreshControl 
+            refreshing={refreshing} 
+            onRefresh={onRefresh} 
+            tintColor={COLORS.primary}
+            colors={[COLORS.primary]}
+          />
+        }
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.greeting}>{getGreeting()}</Text>
+            <Text style={styles.userName}>{user?.name || user?.username}</Text>
+            <Text style={styles.userRole}>{user?.role?.toUpperCase()}</Text>
           </View>
-        ))}
-      </View>
+          <TouchableOpacity style={styles.profileButton}>
+            <View style={styles.profileIconContainer}>
+              <Icon name="person" size={24} color={COLORS.background} />
+            </View>
+          </TouchableOpacity>
+        </View>
 
-      {/* Quick Actions */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Quick Actions</Text>
-        <View style={styles.actionsGrid}>
-          {getQuickActions().map((action, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.actionCard}
-              onPress={() => navigation.navigate(action.route)}
-            >
-              <View style={[styles.actionIcon, { backgroundColor: `${action.color}20` }]}>
-                <Icon name={action.icon} size={28} color={action.color} />
+        {/* Stats Cards */}
+        <View style={styles.statsContainer}>
+          {getStatsCards().map((stat, index) => (
+            <View key={index} style={styles.statCard}>
+              <View style={[styles.statIcon, { borderColor: stat.color }]}>
+                <Icon name={stat.icon} size={20} color={stat.color} />
               </View>
-              <Text style={styles.actionTitle}>{action.title}</Text>
-            </TouchableOpacity>
+              <Text style={[styles.statValue, { color: stat.color }]}>{stat.value}</Text>
+              <Text style={styles.statTitle}>{stat.title}</Text>
+            </View>
           ))}
         </View>
-      </View>
 
-      {/* Recent Activity */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Recent Activity</Text>
-        <View style={styles.activityContainer}>
-          <View style={styles.activityItem}>
-            <View style={styles.activityIcon}>
-              <Icon name="video-call" size={20} color="#10b981" />
-            </View>
-            <View style={styles.activityContent}>
-              <Text style={styles.activityTitle}>Mathematics Class</Text>
-              <Text style={styles.activityTime}>2 hours ago</Text>
-            </View>
+        {/* Quick Actions */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>QUICK ACTIONS</Text>
+          <View style={styles.actionsGrid}>
+            {getQuickActions().map((action, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.actionCard}
+                onPress={() => navigation.navigate(action.route)}
+              >
+                <View style={[styles.actionIcon, { backgroundColor: `${action.color}20` }]}>
+                  <Icon name={action.icon} size={28} color={action.color} />
+                </View>
+                <Text style={styles.actionTitle}>{action.title}</Text>
+              </TouchableOpacity>
+            ))}
           </View>
-          <View style={styles.activityItem}>
-            <View style={styles.activityIcon}>
-              <Icon name="assignment" size={20} color="#f59e0b" />
+        </View>
+
+        {/* Recent Activity */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>SYSTEM LOGS</Text>
+          <View style={styles.activityContainer}>
+            <View style={styles.activityItem}>
+              <View style={styles.activityIcon}>
+                <Icon name="video-call" size={16} color={COLORS.success} />
+              </View>
+              <View style={styles.activityContent}>
+                <Text style={styles.activityTitle}>CLASS_SESSION_INIT</Text>
+                <Text style={styles.activityTime}>2 HOURS AGO</Text>
+              </View>
             </View>
-            <View style={styles.activityContent}>
-              <Text style={styles.activityTitle}>Assignment Submitted</Text>
-              <Text style={styles.activityTime}>1 day ago</Text>
+            <View style={styles.activityItem}>
+              <View style={styles.activityIcon}>
+                <Icon name="assignment" size={16} color={COLORS.warning} />
+              </View>
+              <View style={styles.activityContent}>
+                <Text style={styles.activityTitle}>ASSIGNMENT_UPLOAD</Text>
+                <Text style={styles.activityTime}>1 DAY AGO</Text>
+              </View>
             </View>
-          </View>
-          <View style={styles.activityItem}>
-            <View style={styles.activityIcon}>
-              <Icon name="quiz" size={20} color="#8b5cf6" />
-            </View>
-            <View style={styles.activityContent}>
-              <Text style={styles.activityTitle}>Quiz Completed</Text>
-              <Text style={styles.activityTime}>2 days ago</Text>
+            <View style={styles.activityItem}>
+              <View style={styles.activityIcon}>
+                <Icon name="quiz" size={16} color={COLORS.secondary} />
+              </View>
+              <View style={styles.activityContent}>
+                <Text style={styles.activityTitle}>QUIZ_COMPLETION</Text>
+                <Text style={styles.activityTime}>2 DAYS AGO</Text>
+              </View>
             </View>
           </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: COLORS.background,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  bgGlowTop: {
+    position: 'absolute',
+    top: -100,
+    right: -100,
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: COLORS.primary,
+    opacity: 0.05,
   },
   header: {
     flexDirection: 'row',
@@ -211,23 +240,34 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
   greeting: {
-    fontSize: 16,
-    color: '#64748b',
+    fontSize: 10,
+    color: COLORS.primary,
     marginBottom: 4,
+    fontWeight: 'bold',
+    letterSpacing: 1,
   },
   userName: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1e293b',
+    color: COLORS.text,
     marginBottom: 2,
   },
   userRole: {
-    fontSize: 14,
-    color: '#3b82f6',
-    fontWeight: '500',
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    fontWeight: 'bold',
+    letterSpacing: 1,
   },
   profileButton: {
     padding: 4,
+  },
+  profileIconContainer: {
+    width: 40,
+    height: 40,
+    backgroundColor: COLORS.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...SHADOWS.neon,
   },
   statsContainer: {
     flexDirection: 'row',
@@ -237,45 +277,45 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   statCard: {
-    backgroundColor: 'white',
-    borderRadius: 16,
-    padding: 20,
+    backgroundColor: 'rgba(31, 41, 55, 0.5)',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    padding: 16,
     width: (width - 64) / 2,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
   },
   statIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
+    backgroundColor: 'rgba(0,0,0,0.3)',
   },
   statValue: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#1e293b',
     marginBottom: 4,
   },
   statTitle: {
-    fontSize: 14,
-    color: '#64748b',
+    fontSize: 10,
+    color: COLORS.textSecondary,
     textAlign: 'center',
+    fontWeight: 'bold',
+    letterSpacing: 1,
   },
   section: {
     paddingHorizontal: 24,
     marginBottom: 32,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 14,
     fontWeight: 'bold',
-    color: '#1e293b',
+    color: COLORS.primary,
     marginBottom: 16,
+    letterSpacing: 1,
   },
   actionsGrid: {
     flexDirection: 'row',
@@ -283,69 +323,65 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   actionCard: {
-    backgroundColor: 'white',
-    borderRadius: 16,
+    backgroundColor: 'rgba(31, 41, 55, 0.5)',
+    borderWidth: 1,
+    borderColor: COLORS.border,
     padding: 20,
     width: (width - 64) / 2,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
   },
   actionIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 48,
+    height: 48,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   actionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1e293b',
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: COLORS.text,
     textAlign: 'center',
+    letterSpacing: 1,
   },
   activityContainer: {
-    backgroundColor: 'white',
-    borderRadius: 16,
+    backgroundColor: 'rgba(31, 41, 55, 0.5)',
+    borderWidth: 1,
+    borderColor: COLORS.border,
     padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
   },
   activityItem: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    borderBottomColor: 'rgba(255,255,255,0.05)',
   },
   activityIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#f1f5f9',
+    width: 32,
+    height: 32,
+    backgroundColor: 'rgba(0,0,0,0.3)',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
   activityContent: {
     flex: 1,
   },
   activityTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#1e293b',
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: COLORS.text,
     marginBottom: 2,
+    letterSpacing: 0.5,
   },
   activityTime: {
-    fontSize: 14,
-    color: '#64748b',
+    fontSize: 10,
+    color: COLORS.textSecondary,
   },
 });
 
