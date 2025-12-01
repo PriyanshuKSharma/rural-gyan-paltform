@@ -5,16 +5,14 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Dimensions,
+  StatusBar,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useAuth } from '../context/AuthContext';
-
-const { width } = Dimensions.get('window');
+import { COLORS, SHADOWS } from '../utils/theme';
 
 const LoginScreen = ({ navigation }) => {
   const [credentials, setCredentials] = useState({
@@ -48,16 +46,22 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
+      
+      {/* Background Decorative Elements */}
+      <View style={styles.bgGlowTop} />
+      <View style={styles.bgGlowBottom} />
+
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.logoContainer}>
           <View style={styles.logoIcon}>
-            <Icon name="school" size={32} color="#1e293b" />
+            <Icon name="school" size={28} color={COLORS.primary} />
           </View>
           <Text style={styles.logoText}>NDEMLP</Text>
         </View>
         <TouchableOpacity style={styles.languageButton}>
-          <Text style={styles.languageButtonText}>English/Hindi</Text>
+          <Text style={styles.languageButtonText}>EN / HI</Text>
         </TouchableOpacity>
       </View>
 
@@ -66,100 +70,113 @@ const LoginScreen = ({ navigation }) => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-          {/* Login Form */}
           <View style={styles.formContainer}>
-            <View style={styles.titleContainer}>
-              <Text style={styles.title}>Login</Text>
-              <Text style={styles.subtitle}>Enter your credentials to access your account</Text>
+            
+            {/* Branding */}
+            <View style={styles.brandingContainer}>
+              <Text style={styles.systemText}>SYSTEM: ONLINE // VER: 2.0.77</Text>
+              <Text style={styles.title}>FUTURE OF LEARNING</Text>
+              <View style={styles.divider} />
             </View>
 
-            {error ? (
-              <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{error}</Text>
-              </View>
-            ) : null}
-
-            <View style={styles.form}>
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Username</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your username"
-                  placeholderTextColor="#64748b"
-                  value={credentials.username}
-                  onChangeText={(text) => {
-                    setCredentials({...credentials, username: text});
-                    setError('');
-                  }}
-                  autoCapitalize="none"
-                />
-              </View>
-
-              <View style={styles.inputGroup}>
-                <View style={styles.passwordHeader}>
-                  <Text style={styles.label}>Password</Text>
-                  <TouchableOpacity>
-                    <Text style={styles.forgotPassword}>Forgot password?</Text>
-                  </TouchableOpacity>
+            {/* Form */}
+            <View style={styles.card}>
+              <View style={styles.cardHeader}>
+                <Text style={styles.cardTitle}>ACCESS TERMINAL</Text>
+                <View style={styles.statusDots}>
+                  <View style={[styles.dot, { backgroundColor: COLORS.error }]} />
+                  <View style={[styles.dot, { backgroundColor: COLORS.warning }]} />
+                  <View style={[styles.dot, { backgroundColor: COLORS.success }]} />
                 </View>
-                <View style={styles.passwordContainer}>
+              </View>
+
+              {error ? (
+                <View style={styles.errorContainer}>
+                  <Icon name="error-outline" size={20} color={COLORS.error} />
+                  <Text style={styles.errorText}>{error}</Text>
+                </View>
+              ) : null}
+
+              <View style={styles.form}>
+                <View style={styles.inputGroup}>
+                  <Text style={styles.label}>USERNAME</Text>
                   <TextInput
-                    style={styles.passwordInput}
-                    placeholder="Enter your password"
-                    placeholderTextColor="#64748b"
-                    value={credentials.password}
+                    style={styles.input}
+                    placeholder="ENTER_USERNAME"
+                    placeholderTextColor={COLORS.textSecondary}
+                    value={credentials.username}
                     onChangeText={(text) => {
-                      setCredentials({...credentials, password: text});
+                      setCredentials({...credentials, username: text});
                       setError('');
                     }}
-                    secureTextEntry={!showPassword}
+                    autoCapitalize="none"
                   />
-                  <TouchableOpacity
-                    style={styles.eyeButton}
-                    onPress={() => setShowPassword(!showPassword)}
-                  >
-                    <Icon 
-                      name={showPassword ? 'visibility-off' : 'visibility'} 
-                      size={20} 
-                      color="#64748b" 
-                    />
-                  </TouchableOpacity>
                 </View>
-              </View>
 
-              <TouchableOpacity
-                style={[styles.loginButton, loading && styles.loginButtonDisabled]}
-                onPress={handleLogin}
-                disabled={loading}
-              >
-                <Text style={styles.loginButtonText}>
-                  {loading ? 'Logging in...' : 'Login'}
-                </Text>
-              </TouchableOpacity>
+                <View style={styles.inputGroup}>
+                  <Text style={styles.label}>PASSWORD</Text>
+                  <View style={styles.passwordContainer}>
+                    <TextInput
+                      style={styles.passwordInput}
+                      placeholder="ENTER_PASSWORD"
+                      placeholderTextColor={COLORS.textSecondary}
+                      value={credentials.password}
+                      onChangeText={(text) => {
+                        setCredentials({...credentials, password: text});
+                        setError('');
+                      }}
+                      secureTextEntry={!showPassword}
+                    />
+                    <TouchableOpacity
+                      style={styles.eyeButton}
+                      onPress={() => setShowPassword(!showPassword)}
+                    >
+                      <Icon 
+                        name={showPassword ? 'visibility-off' : 'visibility'} 
+                        size={20} 
+                        color={COLORS.primary} 
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                <TouchableOpacity
+                  style={[styles.loginButton, loading && styles.loginButtonDisabled]}
+                  onPress={handleLogin}
+                  disabled={loading}
+                >
+                  <Text style={styles.loginButtonText}>
+                    {loading ? 'INITIALIZING...' : 'LOGIN'}
+                  </Text>
+                  {!loading && <Icon name="arrow-forward" size={20} color={COLORS.background} />}
+                </TouchableOpacity>
+              </View>
             </View>
 
             {/* Demo Credentials */}
             <View style={styles.demoContainer}>
-              <Text style={styles.demoTitle}>Demo Credentials:</Text>
-              <View style={styles.demoCredentials}>
-                <Text style={styles.demoText}><Text style={styles.demoBold}>Admin:</Text> admin / admin123</Text>
-                <Text style={styles.demoText}><Text style={styles.demoBold}>Teacher:</Text> teacher1 / teacher123</Text>
-                <Text style={styles.demoText}><Text style={styles.demoBold}>Student:</Text> student1 / student123</Text>
+              <Text style={styles.demoTitle}>ACCESS CODES:</Text>
+              <View style={styles.demoRow}>
+                <Text style={styles.demoLabel}>ADMIN:</Text>
+                <Text style={styles.demoValue}>admin / admin123</Text>
+              </View>
+              <View style={styles.demoRow}>
+                <Text style={styles.demoLabel}>TEACHER:</Text>
+                <Text style={styles.demoValue}>teacher1 / teacher123</Text>
+              </View>
+              <View style={styles.demoRow}>
+                <Text style={styles.demoLabel}>STUDENT:</Text>
+                <Text style={styles.demoValue}>student1 / student123</Text>
               </View>
             </View>
 
             {/* Footer */}
             <View style={styles.footer}>
-              <View style={styles.securityInfo}>
-                <Icon name="lock" size={16} color="#64748b" />
-                <Text style={styles.securityText}>Secured by National Informatics Centre (NIC)</Text>
-              </View>
-              <View style={styles.footerLinks}>
-                <TouchableOpacity><Text style={styles.footerLink}>Help</Text></TouchableOpacity>
-                <Text style={styles.footerSeparator}>·</Text>
-                <TouchableOpacity><Text style={styles.footerLink}>Privacy Policy</Text></TouchableOpacity>
-              </View>
+              <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+                <Text style={styles.footerLink}>CREATE ACCOUNT &gt;</Text>
+              </TouchableOpacity>
             </View>
+
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -170,15 +187,35 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: COLORS.background,
+  },
+  bgGlowTop: {
+    position: 'absolute',
+    top: -100,
+    left: -100,
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: COLORS.primary,
+    opacity: 0.1,
+  },
+  bgGlowBottom: {
+    position: 'absolute',
+    bottom: -100,
+    right: -100,
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: COLORS.secondary,
+    opacity: 0.1,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 50,
+    paddingTop: 60,
     paddingHorizontal: 24,
-    paddingBottom: 16,
+    paddingBottom: 20,
   },
   logoContainer: {
     flexDirection: 'row',
@@ -186,26 +223,31 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   logoIcon: {
-    width: 32,
-    height: 32,
+    width: 40,
+    height: 40,
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 243, 255, 0.1)',
   },
   logoText: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#1e293b',
+    color: COLORS.text,
+    letterSpacing: 2,
   },
   languageButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    backgroundColor: 'white',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 8,
+    borderColor: COLORS.border,
+    borderRadius: 4,
   },
   languageButtonText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
-    color: '#1e293b',
+    color: COLORS.primary,
   },
   content: {
     flex: 1,
@@ -216,155 +258,171 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     paddingHorizontal: 24,
-    maxWidth: 400,
-    alignSelf: 'center',
     width: '100%',
   },
-  titleContainer: {
+  brandingContainer: {
     marginBottom: 32,
   },
-  title: {
-    fontSize: 36,
-    fontWeight: '900',
-    color: '#1e293b',
-    marginBottom: 12,
-    letterSpacing: -1,
+  systemText: {
+    color: COLORS.primary,
+    fontSize: 10,
+    letterSpacing: 1,
+    marginBottom: 8,
+    fontWeight: 'bold',
   },
-  subtitle: {
-    fontSize: 16,
-    color: '#64748b',
-    lineHeight: 24,
+  title: {
+    fontSize: 32,
+    fontWeight: '900',
+    color: COLORS.text,
+    lineHeight: 40,
+    marginBottom: 16,
+  },
+  divider: {
+    height: 2,
+    width: 60,
+    backgroundColor: COLORS.secondary,
+  },
+  card: {
+    backgroundColor: 'rgba(31, 41, 55, 0.8)',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    padding: 24,
+    marginBottom: 24,
+    ...SHADOWS.card,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 24,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.1)',
+    paddingBottom: 12,
+  },
+  cardTitle: {
+    color: COLORS.text,
+    fontSize: 14,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+  },
+  statusDots: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
     marginBottom: 16,
-    padding: 16,
-    backgroundColor: '#fef2f2',
+    padding: 12,
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
     borderWidth: 1,
-    borderColor: '#fca5a5',
-    borderRadius: 8,
+    borderColor: COLORS.error,
   },
   errorText: {
-    color: '#dc2626',
-    fontSize: 14,
+    color: COLORS.error,
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   form: {
-    gap: 24,
+    gap: 20,
   },
   inputGroup: {
     gap: 8,
   },
   label: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#1e293b',
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: COLORS.primary,
+    letterSpacing: 1,
   },
   input: {
-    height: 56,
+    height: 50,
     borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    fontSize: 16,
-    backgroundColor: '#f9fafb',
-    color: '#1e293b',
-  },
-  passwordHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  forgotPassword: {
+    borderColor: COLORS.border,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    paddingHorizontal: 16,
     fontSize: 14,
-    fontWeight: '500',
-    color: '#2563eb',
+    color: COLORS.text,
   },
   passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 8,
-    backgroundColor: '#f9fafb',
+    borderColor: COLORS.border,
+    backgroundColor: 'rgba(0,0,0,0.2)',
   },
   passwordInput: {
     flex: 1,
-    height: 56,
-    paddingHorizontal: 15,
-    fontSize: 16,
-    color: '#1e293b',
+    height: 50,
+    paddingHorizontal: 16,
+    fontSize: 14,
+    color: COLORS.text,
   },
   eyeButton: {
-    padding: 16,
+    padding: 12,
   },
   loginButton: {
-    height: 56,
-    backgroundColor: '#2563eb',
-    borderRadius: 8,
+    height: 50,
+    backgroundColor: COLORS.primary,
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    gap: 8,
     marginTop: 8,
+    ...SHADOWS.neon,
   },
   loginButtonDisabled: {
-    opacity: 0.5,
+    opacity: 0.7,
   },
   loginButtonText: {
-    color: 'white',
+    color: COLORS.background,
     fontSize: 16,
     fontWeight: 'bold',
+    letterSpacing: 1,
   },
   demoContainer: {
-    marginTop: 24,
     padding: 16,
-    backgroundColor: '#dbeafe',
+    backgroundColor: 'rgba(0,0,0,0.3)',
     borderWidth: 1,
-    borderColor: '#bfdbfe',
-    borderRadius: 8,
+    borderColor: 'rgba(14, 116, 144, 0.3)',
   },
   demoTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1e40af',
-    marginBottom: 8,
-  },
-  demoCredentials: {
-    gap: 4,
-  },
-  demoText: {
+    color: COLORS.primary,
     fontSize: 12,
-    color: '#1d4ed8',
-  },
-  demoBold: {
     fontWeight: 'bold',
+    marginBottom: 8,
+    letterSpacing: 1,
+  },
+  demoRow: {
+    flexDirection: 'row',
+    marginBottom: 4,
+  },
+  demoLabel: {
+    color: COLORS.textSecondary,
+    fontSize: 12,
+    width: 80,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+  },
+  demoValue: {
+    color: COLORS.text,
+    fontSize: 12,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
   footer: {
-    marginTop: 40,
-    paddingTop: 24,
-    borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
+    marginTop: 24,
     alignItems: 'center',
-    gap: 16,
-  },
-  securityInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  securityText: {
-    fontSize: 14,
-    color: '#64748b',
-  },
-  footerLinks: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
   },
   footerLink: {
+    color: COLORS.primary,
     fontSize: 14,
-    color: '#64748b',
-  },
-  footerSeparator: {
-    fontSize: 14,
-    color: '#64748b',
+    fontWeight: 'bold',
+    letterSpacing: 1,
   },
 });
 
