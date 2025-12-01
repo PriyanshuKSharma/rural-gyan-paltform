@@ -8,6 +8,8 @@ const http = require('http');
 const socketIo = require('socket.io');
 
 const connectDB = require('./config/database');
+const jwt = require('jsonwebtoken');
+const { handleTutorMessage } = require('./services/aiTutor');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -60,12 +62,12 @@ app.use('/api/virtual-class', virtualClassRoutes);
 
 // Root route
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'Digital Learning Platform API',
     version: '1.0.0',
     endpoints: {
       auth: '/api/auth',
-      admin: '/api/admin', 
+      admin: '/api/admin',
       teacher: '/api/teacher',
       student: '/api/student',
       health: '/api/health'
@@ -75,10 +77,10 @@ app.get('/', (req, res) => {
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV 
+    environment: process.env.NODE_ENV
   });
 });
 
@@ -93,14 +95,14 @@ io.on('connection', (socket) => {
     socket.userId = userId;
     socket.userType = userType;
     socket.classId = classId;
-    
+
     // Notify others about new participant
     socket.to(classId).emit('participant-joined', {
       userId,
       userType,
       socketId: socket.id
     });
-    
+
     console.log(`${userType} ${userId} joined virtual class ${classId}`);
   });
 
@@ -191,10 +193,43 @@ io.on('connection', (socket) => {
   });
 });
 
+// AI Tutor Namespace
+io.of("/tutor").use((socket, next) => {
+  const token = socket.handshake.auth.token;
+  if (!token) {
+    return next(new Error("Authentication error"));
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    socket.user = decoded;
+    next();
+  } catch (err) {
+    next(new Error("Authentication error"));
+  }
+}).on("connection", async (socket) => {
+  console.log("Tutor connected:", socket.user.id);
+
+  socket.on("user_message", async (data) => {
+    try {
+      const aiResponse = await handleTutorMessage({
+        userId: socket.user.id,
+        message: data.message,
+        type: data.type, // text | image | pdf | docx
+        file: data.file
+      });
+
+      socket.emit("ai_response", aiResponse);
+    } catch (error) {
+      console.error("Tutor Error:", error);
+      socket.emit("error", { message: "Failed to process message" });
+    }
+  });
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ 
+  res.status(500).json({
     message: 'Something went wrong!',
     error: process.env.NODE_ENV === 'development' ? err.message : {}
   });
