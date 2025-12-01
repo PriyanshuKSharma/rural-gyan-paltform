@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useAuth } from '../context/AuthContext';
+import { COLORS } from '../utils/theme';
 
 // Screens
 import DashboardScreen from '../screens/DashboardScreen';
@@ -10,27 +11,45 @@ import VirtualClassListScreen from '../screens/VirtualClassListScreen';
 import VirtualClassRoomScreen from '../screens/VirtualClassRoomScreen';
 import AttendanceScreen from '../screens/AttendanceScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import MaterialsScreen from '../screens/MaterialsScreen';
+import AITutorScreen from '../screens/AITutorScreen';
+import PlaceholderScreen from '../screens/PlaceholderScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
+const DashboardStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="DashboardMain" component={DashboardScreen} />
+      <Stack.Screen name="Materials" component={MaterialsScreen} />
+      <Stack.Screen name="AITutor" component={AITutorScreen} />
+      
+      {/* Placeholders for future implementation */}
+      <Stack.Screen name="CodeEditor" component={PlaceholderScreen} initialParams={{ title: 'Code Editor' }} />
+      <Stack.Screen name="CreateQuiz" component={PlaceholderScreen} initialParams={{ title: 'Create Quiz' }} />
+      <Stack.Screen name="Students" component={PlaceholderScreen} initialParams={{ title: 'Students' }} />
+      <Stack.Screen name="Analytics" component={PlaceholderScreen} initialParams={{ title: 'Analytics' }} />
+      <Stack.Screen name="Teachers" component={PlaceholderScreen} initialParams={{ title: 'Teachers' }} />
+      <Stack.Screen name="Reports" component={PlaceholderScreen} initialParams={{ title: 'Reports' }} />
+    </Stack.Navigator>
+  );
+};
+
 const VirtualClassStack = () => {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen 
         name="VirtualClassList" 
         component={VirtualClassListScreen}
-        options={{ title: 'Virtual Classes' }}
       />
       <Stack.Screen 
         name="VirtualClassRoom" 
         component={VirtualClassRoomScreen}
-        options={{ title: 'Live Class', headerShown: false }}
       />
       <Stack.Screen 
         name="Attendance" 
         component={AttendanceScreen}
-        options={{ title: 'Attendance' }}
       />
     </Stack.Navigator>
   );
@@ -55,14 +74,22 @@ const MainNavigator = () => {
 
           return <Icon name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#137fec',
+        tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: 'gray',
+        tabBarStyle: {
+          backgroundColor: COLORS.background,
+          borderTopColor: COLORS.border,
+          borderTopWidth: 1,
+          height: 60,
+          paddingBottom: 8,
+          paddingTop: 8,
+        },
         headerShown: false,
       })}
     >
       <Tab.Screen 
         name="Dashboard" 
-        component={DashboardScreen}
+        component={DashboardStack}
         options={{ title: 'Dashboard' }}
       />
       <Tab.Screen 
