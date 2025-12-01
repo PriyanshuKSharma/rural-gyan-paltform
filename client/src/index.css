@@ -3,25 +3,111 @@
 @import 'tailwindcss/utilities';
 
 @layer components {
-  .form-input {
-    @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white;
+  /* Cyberpunk Utilities */
+  .cyber-bg {
+    @apply bg-gray-900;
+    background-image: 
+      linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+    background-size: 30px 30px;
   }
-  
-  .btn-primary {
-    @apply px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors;
+
+  .cyber-card {
+    @apply bg-gray-900/80 border border-cyan-500/30 backdrop-blur-xl relative;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+    clip-path: polygon(
+      0 0, 
+      100% 0, 
+      100% calc(100% - 20px), 
+      calc(100% - 20px) 100%, 
+      0 100%
+    );
   }
-  
-  .btn-secondary {
-    @apply px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors;
+
+  .cyber-input {
+    @apply w-full bg-gray-900/50 border border-cyan-900 text-cyan-100 px-4 py-3 focus:outline-none focus:border-cyan-400 transition-all duration-300;
+    clip-path: polygon(
+      0 0, 
+      100% 0, 
+      100% calc(100% - 10px), 
+      calc(100% - 10px) 100%, 
+      0 100%
+    );
   }
-  
-  .table-header {
-    @apply px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider;
+  .cyber-input:focus {
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
   }
-  
-  .table-cell {
-    @apply px-6 py-4 whitespace-nowrap text-sm;
+
+  .cyber-btn-primary {
+    @apply relative px-8 py-3 bg-cyan-600 text-black font-bold uppercase tracking-wider hover:bg-cyan-400 transition-all duration-200;
+    clip-path: polygon(
+      10px 0, 
+      100% 0, 
+      100% calc(100% - 10px), 
+      calc(100% - 10px) 100%, 
+      0 100%, 
+      0 10px
+    );
   }
+  .cyber-btn-primary:hover {
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  }
+
+  .cyber-glitch-text {
+    position: relative;
+    animation: glitch-skew 3s infinite linear alternate-reverse;
+  }
+  .cyber-glitch-text::before,
+  .cyber-glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .cyber-glitch-text::before {
+    left: 2px;
+    text-shadow: -1px 0 #ff00c1;
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim 5s infinite linear alternate-reverse;
+  }
+  .cyber-glitch-text::after {
+    left: -2px;
+    text-shadow: -1px 0 #00fff9;
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim2 5s infinite linear alternate-reverse;
+  }
+}
+
+@keyframes glitch-anim {
+  0% { clip: rect(31px, 9999px, 94px, 0); }
+  20% { clip: rect(6px, 9999px, 3px, 0); }
+  40% { clip: rect(87px, 9999px, 35px, 0); }
+  60% { clip: rect(13px, 9999px, 86px, 0); }
+  80% { clip: rect(45px, 9999px, 16px, 0); }
+  100% { clip: rect(96px, 9999px, 7px, 0); }
+}
+
+@keyframes glitch-anim2 {
+  0% { clip: rect(65px, 9999px, 100px, 0); }
+  20% { clip: rect(22px, 9999px, 6px, 0); }
+  40% { clip: rect(76px, 9999px, 89px, 0); }
+  60% { clip: rect(3px, 9999px, 23px, 0); }
+  80% { clip: rect(54px, 9999px, 45px, 0); }
+  100% { clip: rect(11px, 9999px, 76px, 0); }
+}
+
+@keyframes glitch-skew {
+  0% { transform: skew(1deg); }
+  10% { transform: skew(-1deg); }
+  20% { transform: skew(0.5deg); }
+  30% { transform: skew(-0.5deg); }
+  40% { transform: skew(2deg); }
+  50% { transform: skew(-2deg); }
+  60% { transform: skew(0deg); }
+  100% { transform: skew(0deg); }
 }
 
 body {
