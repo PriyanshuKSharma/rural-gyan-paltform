@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Video, Calendar, Clock, Users, ArrowRight, RefreshCw, ArrowLeft } from 'lucide-react';
 
 const StudentVirtualClass = () => {
   const [availableClasses, setAvailableClasses] = useState([]);
@@ -49,10 +50,10 @@ const StudentVirtualClass = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'scheduled': return 'bg-yellow-100 text-yellow-800';
-      case 'live': return 'bg-green-100 text-green-800 animate-pulse';
-      case 'ended': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'scheduled': return 'text-yellow-400 border-yellow-400/50 bg-yellow-400/10';
+      case 'live': return 'text-red-400 border-red-400/50 bg-red-400/10 animate-pulse';
+      case 'ended': return 'text-gray-400 border-gray-400/50 bg-gray-400/10';
+      default: return 'text-gray-400 border-gray-400/50 bg-gray-400/10';
     }
   };
 
@@ -61,85 +62,112 @@ const StudentVirtualClass = () => {
     const classTime = new Date(scheduledAt);
     const diffMs = classTime - now;
     
-    if (diffMs < 0) return 'Started';
+    if (diffMs < 0) return 'STARTED';
     
     const diffMins = Math.floor(diffMs / (1000 * 60));
     const diffHours = Math.floor(diffMins / 60);
     const diffDays = Math.floor(diffHours / 24);
     
-    if (diffDays > 0) return `${diffDays} day(s)`;
-    if (diffHours > 0) return `${diffHours} hour(s)`;
-    if (diffMins > 0) return `${diffMins} minute(s)`;
-    return 'Starting soon';
+    if (diffDays > 0) return `${diffDays} DAY(S)`;
+    if (diffHours > 0) return `${diffHours} HOUR(S)`;
+    if (diffMins > 0) return `${diffMins} MIN(S)`;
+    return 'SOON';
   };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="p-6">
-      <div className="flex items-center gap-4 mb-4">
-        <button
-          onClick={() => window.history.back()}
-          className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
-        >
-          <span className="material-symbols-outlined">arrow_back</span>
-          Back
-        </button>
+    <div className="p-6 cyber-bg min-h-screen relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(6,182,212,0.05),transparent_70%)]" />
+        <div className="absolute w-full h-full bg-[linear-gradient(rgba(6,182,212,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
       </div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">Available Virtual Classes</h1>
-        <p className="text-gray-600">Join live classes or view upcoming sessions</p>
+
+      <div className="relative z-10 mb-8">
+        <div className="flex items-center gap-4 mb-6">
+          <button
+            onClick={() => window.history.back()}
+            className="flex items-center gap-2 px-4 py-2 text-cyan-400 hover:text-cyan-300 transition-colors group"
+          >
+            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+            BACK_TO_DASHBOARD
+          </button>
+        </div>
+        
+        <div className="flex justify-between items-end">
+          <div>
+            <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 cyber-glitch-text" data-text="AVAILABLE_CLASSES">
+              AVAILABLE_CLASSES
+            </h1>
+            <div className="h-1 w-20 bg-gradient-to-r from-cyan-500 to-purple-500 mt-2" />
+            <p className="text-cyan-600 mt-2 font-mono text-sm">SECURE_CONNECTION_READY // JOIN_SESSION</p>
+          </div>
+          
+          <button
+            onClick={fetchAvailableClasses}
+            className="cyber-btn-secondary px-4 py-2 flex items-center gap-2"
+          >
+            <RefreshCw className="w-4 h-4" />
+            REFRESH_DATA
+          </button>
+        </div>
       </div>
 
       {availableClasses.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="text-gray-400 text-6xl mb-4">📚</div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No classes available</h3>
-          <p className="text-gray-500">Check back later for upcoming virtual classes</p>
+        <div className="text-center py-16 relative z-10">
+          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-800/50 flex items-center justify-center border border-gray-700">
+            <Video className="w-10 h-10 text-gray-600" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-300 mb-2">NO_CLASSES_DETECTED</h3>
+          <p className="text-gray-500 font-mono">SYSTEM_WAITING_FOR_SCHEDULE...</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
           {availableClasses.map((classItem) => (
-            <div key={classItem._id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+            <div key={classItem._id} className="cyber-card p-6 group hover:border-cyan-500/50 transition-all duration-300">
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">{classItem.title}</h3>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(classItem.status)}`}>
-                  {classItem.status === 'live' ? '🔴 LIVE' : classItem.status.toUpperCase()}
+                <h3 className="text-xl font-bold text-cyan-100 group-hover:text-cyan-400 transition-colors">
+                  {classItem.title}
+                </h3>
+                <span className={`px-2 py-1 rounded text-[10px] font-bold tracking-wider border ${getStatusColor(classItem.status)}`}>
+                  {classItem.status === 'live' ? '● LIVE_FEED' : classItem.status.toUpperCase()}
                 </span>
               </div>
               
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center text-sm text-gray-600">
-                  <span className="font-medium w-20">Subject:</span>
-                  <span>{classItem.subject}</span>
+              <div className="space-y-3 mb-6">
+                <div className="flex items-center text-sm text-gray-400 font-mono">
+                  <span className="w-24 text-cyan-600">SUBJECT:</span>
+                  <span className="text-cyan-100">{classItem.subject}</span>
                 </div>
-                <div className="flex items-center text-sm text-gray-600">
-                  <span className="font-medium w-20">Grade:</span>
-                  <span>{classItem.grade}</span>
+                <div className="flex items-center text-sm text-gray-400 font-mono">
+                  <span className="w-24 text-cyan-600">GRADE:</span>
+                  <span className="text-cyan-100">{classItem.grade}</span>
                 </div>
-                <div className="flex items-center text-sm text-gray-600">
-                  <span className="font-medium w-20">Teacher:</span>
-                  <span>{classItem.teacherId?.userId?.fullName || 'N/A'}</span>
+                <div className="flex items-center text-sm text-gray-400 font-mono">
+                  <span className="w-24 text-cyan-600">INSTRUCTOR:</span>
+                  <span className="text-cyan-100">{classItem.teacherId?.userId?.fullName || 'UNKNOWN'}</span>
                 </div>
-                <div className="flex items-center text-sm text-gray-600">
-                  <span className="font-medium w-20">Time:</span>
-                  <span>{new Date(classItem.scheduledAt).toLocaleString()}</span>
+                <div className="flex items-center text-sm text-gray-400 font-mono">
+                  <span className="w-24 text-cyan-600">TIME:</span>
+                  <span className="text-cyan-100">{new Date(classItem.scheduledAt).toLocaleString()}</span>
                 </div>
-                <div className="flex items-center text-sm text-gray-600">
-                  <span className="font-medium w-20">Duration:</span>
-                  <span>{classItem.duration} minutes</span>
+                <div className="flex items-center text-sm text-gray-400 font-mono">
+                  <span className="w-24 text-cyan-600">DURATION:</span>
+                  <span className="text-cyan-100">{classItem.duration} MIN</span>
                 </div>
                 
                 {classItem.status === 'scheduled' && (
-                  <div className="flex items-center text-sm">
-                    <span className="font-medium w-20 text-gray-600">Starts in:</span>
-                    <span className="text-blue-600 font-medium">
+                  <div className="flex items-center text-sm font-mono bg-gray-800/50 p-2 rounded border border-gray-700">
+                    <Clock className="w-4 h-4 text-yellow-500 mr-2" />
+                    <span className="text-gray-400 mr-2">STARTS_IN:</span>
+                    <span className="text-yellow-400 font-bold">
                       {getTimeUntilClass(classItem.scheduledAt)}
                     </span>
                   </div>
@@ -147,56 +175,51 @@ const StudentVirtualClass = () => {
               </div>
 
               {classItem.description && (
-                <p className="text-sm text-gray-700 mb-4 line-clamp-2">{classItem.description}</p>
+                <p className="text-sm text-gray-500 mb-6 line-clamp-2 font-mono border-l-2 border-gray-700 pl-3 italic">
+                  "{classItem.description}"
+                </p>
               )}
 
-              <div className="flex flex-col space-y-2">
+              <div className="flex flex-col space-y-3">
                 {classItem.status === 'live' && (
                   <button
                     onClick={() => joinClass(classItem._id)}
-                    className="w-full px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors font-medium"
+                    className="cyber-btn-primary w-full py-3 flex items-center justify-center gap-2 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-all duration-300"
                   >
-                    🎥 Join Live Class
+                    <Video className="w-4 h-4" />
+                    JOIN_LIVE_FEED
                   </button>
                 )}
                 
                 {classItem.status === 'scheduled' && (
                   <button
                     disabled
-                    className="w-full px-4 py-2 bg-gray-300 text-gray-500 rounded cursor-not-allowed"
+                    className="w-full py-3 bg-gray-800 border border-gray-700 text-gray-500 cursor-not-allowed font-mono text-sm flex items-center justify-center gap-2"
                   >
-                    ⏰ Scheduled
+                    <Calendar className="w-4 h-4" />
+                    SCHEDULED_LOCKED
                   </button>
                 )}
                 
-                <div className="text-xs text-gray-500 text-center">
-                  Meeting ID: {classItem.meetingId}
+                <div className="text-[10px] text-gray-600 text-center font-mono mt-2">
+                  ID: {classItem.meetingId}
                 </div>
               </div>
 
               {/* Participants count */}
-              <div className="mt-3 pt-3 border-t border-gray-100">
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  <span>👥 {classItem.participants?.length || 0} participants</span>
-                  {classItem.status === 'live' && (
-                    <span className="text-green-600 font-medium">● Active now</span>
-                  )}
+              <div className="mt-4 pt-4 border-t border-cyan-900/30 flex items-center justify-between text-xs font-mono">
+                <div className="flex items-center gap-2 text-gray-400">
+                  <Users className="w-3 h-3" />
+                  <span>{classItem.participants?.length || 0} CONNECTED</span>
                 </div>
+                {classItem.status === 'live' && (
+                  <span className="text-green-400 animate-pulse">● SIGNAL_ACTIVE</span>
+                )}
               </div>
             </div>
           ))}
         </div>
       )}
-
-      {/* Refresh button */}
-      <div className="mt-8 text-center">
-        <button
-          onClick={fetchAvailableClasses}
-          className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-        >
-          🔄 Refresh Classes
-        </button>
-      </div>
     </div>
   );
 };
