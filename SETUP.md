@@ -29,8 +29,8 @@
 
 1. **Clone and navigate to project**
    ```bash
-   git clone <your-repo-url>
-   cd digital-learning-2
+   git clone https://github.com/PriyanshuKSharma/rural-gyan-paltform.git
+   cd rural-gyan-paltform
    ```
 
 2. **Install server dependencies**
