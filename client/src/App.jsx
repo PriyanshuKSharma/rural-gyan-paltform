@@ -10,6 +10,7 @@ import SignUp from './pages/SignUp';
 import AdminDashboard from './pages/AdminDashboard';
 import TeacherDashboard from './pages/TeacherDashboard';
 import StudentDashboard from './pages/StudentDashboard';
+import AITutor from './pages/AITutor';
 
 // Components
 import LoadingSpinner from './components/Common/LoadingSpinner';
@@ -49,92 +50,101 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route 
-        path="/login" 
-        element={user ? <Navigate to={`/${user.role}`} replace /> : <Login />} 
+      <Route
+        path="/login"
+        element={user ? <Navigate to={`/${user.role}`} replace /> : <Login />}
       />
-      
-      <Route 
-        path="/signup" 
-        element={user ? <Navigate to={`/${user.role}`} replace /> : <SignUp />} 
+
+      <Route
+        path="/signup"
+        element={user ? <Navigate to={`/${user.role}`} replace /> : <SignUp />}
       />
-      
-      <Route 
-        path="/admin/*" 
+
+      <Route
+        path="/admin/*"
         element={
           <ProtectedRoute allowedRoles={['admin']}>
             <AdminDashboard />
           </ProtectedRoute>
-        } 
+        }
       />
-      
-      <Route 
-        path="/teacher/*" 
+
+      <Route
+        path="/teacher/*"
         element={
           <ProtectedRoute allowedRoles={['teacher']}>
             <TeacherDashboard />
           </ProtectedRoute>
-        } 
+        }
       />
-      
-      <Route 
-        path="/student/*" 
+
+      <Route
+        path="/student/*"
         element={
           <ProtectedRoute allowedRoles={['student']}>
             <StudentDashboard />
           </ProtectedRoute>
-        } 
+        }
       />
-      
-      <Route 
-        path="/virtual-class/:classId" 
+
+      <Route
+        path="/ai-tutor"
+        element={
+          <ProtectedRoute allowedRoles={['student', 'teacher']}>
+            <AITutor />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/virtual-class/:classId"
         element={
           <ProtectedRoute allowedRoles={['teacher', 'student']}>
             <VirtualClass />
           </ProtectedRoute>
-        } 
+        }
       />
-      
-      <Route 
-        path="/teacher-virtual-classes" 
+
+      <Route
+        path="/teacher-virtual-classes"
         element={
           <ProtectedRoute allowedRoles={['teacher']}>
             <TeacherVirtualClass />
           </ProtectedRoute>
-        } 
+        }
       />
-      
-      <Route 
-        path="/student-virtual-classes" 
+
+      <Route
+        path="/student-virtual-classes"
         element={
           <ProtectedRoute allowedRoles={['student']}>
             <StudentVirtualClass />
           </ProtectedRoute>
-        } 
+        }
       />
-      
-      <Route 
-        path="/virtual-class/:classId/attendance" 
+
+      <Route
+        path="/virtual-class/:classId/attendance"
         element={
           <ProtectedRoute allowedRoles={['teacher']}>
             <AttendanceManager />
           </ProtectedRoute>
-        } 
+        }
       />
-      
-      <Route 
-        path="/" 
+
+      <Route
+        path="/"
         element={
           user ? (
             <Navigate to={`/${user.role}`} replace />
           ) : (
             <Navigate to="/login" replace />
           )
-        } 
+        }
       />
-      
-      <Route 
-        path="/unauthorized" 
+
+      <Route
+        path="/unauthorized"
         element={
           <div className="min-h-screen flex items-center justify-center bg-gray-50">
             <div className="text-center">
@@ -144,7 +154,7 @@ const AppRoutes = () => {
               <p className="text-gray-600 mb-4">
                 You don't have permission to access this page.
               </p>
-              <button 
+              <button
                 onClick={() => window.history.back()}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
               >
@@ -152,11 +162,11 @@ const AppRoutes = () => {
               </button>
             </div>
           </div>
-        } 
+        }
       />
-      
-      <Route 
-        path="*" 
+
+      <Route
+        path="*"
         element={
           <div className="min-h-screen flex items-center justify-center bg-gray-50">
             <div className="text-center">
@@ -166,7 +176,7 @@ const AppRoutes = () => {
               <p className="text-gray-600 mb-4">
                 The page you're looking for doesn't exist.
               </p>
-              <button 
+              <button
                 onClick={() => window.history.back()}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
               >
@@ -174,7 +184,7 @@ const AppRoutes = () => {
               </button>
             </div>
           </div>
-        } 
+        }
       />
     </Routes>
   );
@@ -186,7 +196,7 @@ function App() {
       <Router>
         <div className="App">
           <AppRoutes />
-          <Toaster 
+          <Toaster
             position="top-right"
             toastOptions={{
               duration: 4000,

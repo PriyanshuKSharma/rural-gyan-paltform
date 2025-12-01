@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next';
 import { Send, Brain, User, Mic, Image, FileText, Copy, ThumbsUp, ThumbsDown, MicOff, X, ChevronDown, ChevronUp, Sparkles, Zap, BookOpen, Settings, Maximize2, Minimize2 } from 'lucide-react';
 import { studentAPI } from '../../services/api';
+import { io } from "socket.io-client";
 import toast from 'react-hot-toast';
 import './AITutor.css';
 
@@ -26,6 +27,32 @@ const AITutor = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [theme, setTheme] = useState('gradient');
+  const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    const newSocket = io("/tutor", {
+      auth: { token }
+    });
+
+    newSocket.on("connect", () => console.log("Connected to AI Tutor Socket"));
+
+    newSocket.on("ai_response", (data) => {
+      const aiMessage = {
+        id: Date.now(),
+        type: 'ai',
+        content: data.response,
+        timestamp: new Date().toISOString(),
+        reactions: {}
+      };
+      setIsTyping(false);
+      setMessages(prev => [...prev, aiMessage]);
+      setIsLoading(false);
+    });
+
+    setSocket(newSocket);
+    return () => newSocket.close();
+  }, []);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
   const imageInputRef = useRef(null);
@@ -77,42 +104,27 @@ const AITutor = () => {
     setIsTyping(true);
 
     try {
-      let response;
       if (files.length > 0) {
-        const formData = new FormData();
-        formData.append('message', messageContent);
-        files.forEach(file => formData.append('files', file));
-        response = await studentAPI.chatWithAI(formData);
+        const file = files[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+          socket.emit("user_message", {
+            type: file.type.includes("image") ? "image" : "pdf",
+            file: reader.result,
+            message: messageContent
+          });
+        };
+        reader.readAsArrayBuffer(file);
       } else {
-        response = await studentAPI.chatWithAI(messageContent);
+        socket.emit("user_message", {
+          type: "text",
+          message: messageContent
+        });
       }
-      
-      const aiMessage = {
-        id: Date.now() + 1,
-        type: 'ai',
-        content: response.data.data.response,
-        timestamp: new Date().toISOString(),
-        reactions: {}
-      };
-
-      // Simulate typing effect
-      setTimeout(() => {
-        setIsTyping(false);
-        setMessages(prev => [...prev, aiMessage]);
-      }, 1500);
     } catch (error) {
-      toast.error('Failed to get AI response');
-      const errorMessage = {
-        id: Date.now() + 1,
-        type: 'ai',
-        content: 'Sorry, I encountered an error. Please try again.',
-        timestamp: new Date().toISOString(),
-        reactions: {}
-      };
-      setIsTyping(false);
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
+      toast.error('Failed to send message');
       setIsLoading(false);
+      setIsTyping(false);
     }
   };
 
@@ -202,13 +214,11 @@ const AITutor = () => {
   ];
 
   return (
-    <div className={`h-full flex flex-col rounded-2xl border relative transition-all duration-300 ${
-      isFullscreen ? 'fixed inset-4 z-50 shadow-2xl' : ''
-    } ${
-      theme === 'gradient' 
+    <div className={`h-full flex flex-col rounded-2xl border relative transition-all duration-300 ${isFullscreen ? 'fixed inset-4 z-50 shadow-2xl' : ''
+      } ${theme === 'gradient'
         ? 'bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 border-blue-200 dark:border-purple-700'
         : 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700'
-    }`}>
+      }`}>
       {/* Header */}
       <div className="flex items-center justify-between p-6 border-b border-blue-200 dark:border-purple-700 bg-gradient-to-r from-blue-500/5 to-purple-500/5 dark:from-blue-500/10 dark:to-purple-500/10">
         <div className="flex items-center space-x-4">
@@ -254,7 +264,7 @@ const AITutor = () => {
       </div>
 
       {/* Messages */}
-      <div 
+      <div
         ref={messagesContainerRef}
         className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar scroll-smooth"
         onScroll={handleScroll}
@@ -272,7 +282,7 @@ const AITutor = () => {
             <span>Load more messages</span>
           </button>
         )}
-        
+
         {paginatedMessages.map((message, index) => (
           <div
             key={message.id}
@@ -282,37 +292,35 @@ const AITutor = () => {
             aria-label={`${message.type === 'user' ? 'Your' : 'AI'} message`}
           >
             <div className={`flex items-start space-x-3 max-w-4xl ${message.type === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg transition-transform hover:scale-110 ${
-                message.type === 'user' 
-                  ? 'bg-gradient-to-r from-blue-500 to-blue-600' 
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg transition-transform hover:scale-110 ${message.type === 'user'
+                  ? 'bg-gradient-to-r from-blue-500 to-blue-600'
                   : 'bg-gradient-to-r from-purple-500 via-blue-500 to-pink-500 animate-gradient-x'
-              }`}>
+                }`}>
                 {message.type === 'user' ? (
                   <User className="text-white" size={18} />
                 ) : (
                   <Brain className="text-white" size={18} />
                 )}
               </div>
-              <div className={`rounded-2xl p-5 group relative shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl ${
-                message.type === 'user'
+              <div className={`rounded-2xl p-5 group relative shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl ${message.type === 'user'
                   ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
                   : 'bg-white/80 dark:bg-gray-800/80 text-gray-900 dark:text-white border border-gray-200/50 dark:border-gray-700/50'
-              }`}>
+                }`}>
                 <div className="text-sm leading-relaxed whitespace-pre-wrap prose prose-sm max-w-none dark:prose-invert">
                   {message.content.includes('#') ? (
-                    <div dangerouslySetInnerHTML={{ 
+                    <div dangerouslySetInnerHTML={{
                       __html: message.content
                         .replace(/# (.*)/g, '<h3 class="text-lg font-bold mb-2 text-purple-600 dark:text-purple-400">$1</h3>')
                         .replace(/## (.*)/g, '<h4 class="text-md font-semibold mb-2 text-blue-600 dark:text-blue-400">$1</h4>')
                         .replace(/### (.*)/g, '<h5 class="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">$1</h5>')
                         .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-purple-600 dark:text-purple-400">$1</strong>')
                         .replace(/\n/g, '<br/>')
-                    }} 
-                  />) : (
+                    }}
+                    />) : (
                     message.content
                   )}
                 </div>
-                
+
                 {message.files && message.files.length > 0 && (
                   <div className="mt-2 space-y-1">
                     {message.files.map((file, idx) => (
@@ -323,22 +331,20 @@ const AITutor = () => {
                     ))}
                   </div>
                 )}
-                
+
                 <div className="flex items-center justify-between mt-2">
-                  <p className={`text-xs ${
-                    message.type === 'user' ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'
-                  }`}>
+                  <p className={`text-xs ${message.type === 'user' ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'
+                    }`}>
                     {new Date(message.timestamp).toLocaleTimeString()}
                   </p>
-                  
+
                   <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
                     <button
                       onClick={() => copyMessage(message.content)}
-                      className={`p-2 rounded-lg transition-all duration-200 hover:scale-110 ${
-                        message.type === 'user' 
-                          ? 'text-blue-100 hover:text-white hover:bg-white/20' 
+                      className={`p-2 rounded-lg transition-all duration-200 hover:scale-110 ${message.type === 'user'
+                          ? 'text-blue-100 hover:text-white hover:bg-white/20'
                           : 'text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30'
-                      }`}
+                        }`}
                       title="Copy message"
                       aria-label="Copy message"
                     >
@@ -403,7 +409,7 @@ const AITutor = () => {
 
         <div ref={messagesEndRef} />
       </div>
-      
+
       {showScrollButton && (
         <button
           onClick={scrollToBottom}
@@ -447,11 +453,10 @@ const AITutor = () => {
           <div className="mb-4 flex flex-wrap gap-3">
             {uploadedFiles.map((file, index) => (
               <div key={index} className="flex items-center space-x-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-3 shadow-lg border border-gray-200/50 dark:border-gray-700/50 animate-fade-in hover:shadow-xl transition-all duration-300">
-                <div className={`p-2 rounded-lg ${
-                  file.type.startsWith('image/') 
+                <div className={`p-2 rounded-lg ${file.type.startsWith('image/')
                     ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
                     : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                }`}>
+                  }`}>
                   {file.type.startsWith('image/') ? <Image size={16} /> : <FileText size={16} />}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -469,18 +474,17 @@ const AITutor = () => {
             ))}
           </div>
         )}
-        
+
         <form onSubmit={handleSendMessage} className="flex items-end space-x-4">
           <div className="flex-1">
             <div className="flex items-center space-x-3 mb-3">
               <button
                 type="button"
                 onClick={isRecording ? stopRecording : startRecording}
-                className={`p-3 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-lg hover:shadow-xl hover:scale-110 ${
-                  isRecording 
-                    ? 'bg-red-500 text-white focus:ring-red-500 animate-pulse shadow-red-200 dark:shadow-red-900/50' 
+                className={`p-3 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-lg hover:shadow-xl hover:scale-110 ${isRecording
+                    ? 'bg-red-500 text-white focus:ring-red-500 animate-pulse shadow-red-200 dark:shadow-red-900/50'
                     : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 focus:ring-purple-500 border border-gray-200 dark:border-gray-700'
-                }`}
+                  }`}
                 title={isRecording ? 'Stop recording' : 'Voice input'}
                 aria-label={isRecording ? 'Stop recording' : 'Start voice recording'}
               >
@@ -536,7 +540,7 @@ const AITutor = () => {
             <Send size={24} className={isLoading ? 'animate-pulse' : ''} />
           </button>
         </form>
-        
+
         <input
           ref={fileInputRef}
           type="file"
@@ -555,7 +559,7 @@ const AITutor = () => {
           className="hidden"
           aria-label="Image upload input"
         />
-        
+
         <div className="flex items-center justify-between mt-3">
           <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center space-x-2">
             <span>Press Enter to send, Shift+Enter for new line</span>
