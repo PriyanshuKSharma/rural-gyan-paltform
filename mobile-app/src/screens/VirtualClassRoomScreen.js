@@ -9,12 +9,14 @@ import {
   ScrollView,
   TextInput,
   Modal,
+  StatusBar,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 // WebRTC not available in Expo Go - using placeholder
 import io from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
 import { apiService } from '../services/apiService';
+import { COLORS, SHADOWS } from '../utils/theme';
 
 const { width, height } = Dimensions.get('window');
 
@@ -44,10 +46,10 @@ const VirtualClassRoomScreen = ({ route, navigation }) => {
   const initializeCall = async () => {
     try {
       // WebRTC not available in Expo Go
-      Alert.alert('Notice', 'Video calling requires a development build. This is a demo version.');
+      Alert.alert('NOTICE', 'VIDEO CALLING REQUIRES A DEVELOPMENT BUILD. THIS IS A DEMO VERSION.');
 
       // Initialize socket
-      socketRef.current = io('http://localhost:5000');
+      socketRef.current = io('http://192.168.1.6:5000');
       
       socketRef.current.emit('join-virtual-class', {
         classId,
@@ -66,7 +68,7 @@ const VirtualClassRoomScreen = ({ route, navigation }) => {
       // Fetch class data
       fetchClassData();
     } catch (error) {
-      Alert.alert('Error', 'Failed to initialize video call');
+      Alert.alert('ERROR', 'FAILED TO INITIALIZE VIDEO CALL');
       navigation.goBack();
     }
   };
@@ -246,22 +248,27 @@ const VirtualClassRoomScreen = ({ route, navigation }) => {
       }
       navigation.goBack();
     } catch (error) {
-      Alert.alert('Error', 'Failed to end class');
+      Alert.alert('ERROR', 'FAILED TO END CLASS');
     }
   };
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
+      
       {/* Main Video Area */}
       <View style={styles.videoContainer}>
         <View style={styles.localVideo}>
-          <Text style={styles.placeholderText}>Video Preview</Text>
+          <Icon name="videocam-off" size={64} color={COLORS.textSecondary} />
+          <Text style={styles.placeholderText}>VIDEO FEED OFFLINE</Text>
+          <Text style={styles.statusText}>SYSTEM STANDBY</Text>
         </View>
         
         {/* Remote Videos */}
         <ScrollView horizontal style={styles.remoteVideos}>
           <View style={styles.remoteVideo}>
-            <Text style={styles.placeholderText}>Remote Video</Text>
+            <Icon name="person" size={32} color={COLORS.textSecondary} />
+            <Text style={styles.placeholderText}>REMOTE</Text>
           </View>
         </ScrollView>
       </View>
@@ -272,64 +279,67 @@ const VirtualClassRoomScreen = ({ route, navigation }) => {
           style={[styles.controlButton, !isAudioOn && styles.controlButtonOff]}
           onPress={toggleAudio}
         >
-          <Icon name={isAudioOn ? 'mic' : 'mic-off'} size={24} color="white" />
+          <Icon name={isAudioOn ? 'mic' : 'mic-off'} size={24} color={COLORS.background} />
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.controlButton, !isVideoOn && styles.controlButtonOff]}
           onPress={toggleVideo}
         >
-          <Icon name={isVideoOn ? 'videocam' : 'videocam-off'} size={24} color="white" />
+          <Icon name={isVideoOn ? 'videocam' : 'videocam-off'} size={24} color={COLORS.background} />
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.controlButton}
           onPress={() => setShowChat(true)}
         >
-          <Icon name="chat" size={24} color="white" />
+          <Icon name="chat" size={24} color={COLORS.background} />
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.controlButton, styles.endButton]}
           onPress={endClass}
         >
-          <Icon name="call-end" size={24} color="white" />
+          <Icon name="call-end" size={24} color={COLORS.background} />
         </TouchableOpacity>
       </View>
 
       {/* Chat Modal */}
-      <Modal visible={showChat} animationType="slide">
-        <View style={styles.chatContainer}>
-          <View style={styles.chatHeader}>
-            <Text style={styles.chatTitle}>Chat</Text>
-            <TouchableOpacity onPress={() => setShowChat(false)}>
-              <Icon name="close" size={24} color="#64748b" />
-            </TouchableOpacity>
-          </View>
+      <Modal visible={showChat} animationType="slide" transparent={true}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.chatContainer}>
+            <View style={styles.chatHeader}>
+              <Text style={styles.chatTitle}>SECURE_CHAT_CHANNEL</Text>
+              <TouchableOpacity onPress={() => setShowChat(false)}>
+                <Icon name="close" size={24} color={COLORS.text} />
+              </TouchableOpacity>
+            </View>
 
-          <ScrollView style={styles.chatMessages}>
-            {messages.map((msg, index) => (
-              <View key={index} style={styles.messageContainer}>
-                <Text style={styles.messageSender}>{msg.sender}</Text>
-                <Text style={styles.messageText}>{msg.message}</Text>
-                <Text style={styles.messageTime}>
-                  {new Date(msg.timestamp).toLocaleTimeString()}
-                </Text>
-              </View>
-            ))}
-          </ScrollView>
+            <ScrollView style={styles.chatMessages}>
+              {messages.map((msg, index) => (
+                <View key={index} style={styles.messageContainer}>
+                  <Text style={styles.messageSender}>{msg.sender.toUpperCase()}</Text>
+                  <Text style={styles.messageText}>{msg.message}</Text>
+                  <Text style={styles.messageTime}>
+                    {new Date(msg.timestamp).toLocaleTimeString()}
+                  </Text>
+                </View>
+              ))}
+            </ScrollView>
 
-          <View style={styles.chatInput}>
-            <TextInput
-              style={styles.messageInput}
-              value={newMessage}
-              onChangeText={setNewMessage}
-              placeholder="Type a message..."
-              multiline
-            />
-            <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
-              <Icon name="send" size={20} color="white" />
-            </TouchableOpacity>
+            <View style={styles.chatInput}>
+              <TextInput
+                style={styles.messageInput}
+                value={newMessage}
+                onChangeText={setNewMessage}
+                placeholder="ENTER MESSAGE..."
+                placeholderTextColor={COLORS.textSecondary}
+                multiline
+              />
+              <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
+                <Icon name="send" size={20} color={COLORS.background} />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -340,20 +350,35 @@ const VirtualClassRoomScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: COLORS.background,
   },
   videoContainer: {
     flex: 1,
+    backgroundColor: '#000',
   },
   localVideo: {
     flex: 1,
-    backgroundColor: '#1e293b',
+    backgroundColor: '#000',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+    margin: 16,
+    borderRadius: 8,
+    ...SHADOWS.neon,
   },
   placeholderText: {
-    color: 'white',
-    fontSize: 16,
+    color: COLORS.textSecondary,
+    fontSize: 12,
+    marginTop: 8,
+    letterSpacing: 1,
+    fontWeight: 'bold',
+  },
+  statusText: {
+    color: COLORS.primary,
+    fontSize: 10,
+    marginTop: 4,
+    letterSpacing: 2,
   },
   remoteVideos: {
     position: 'absolute',
@@ -366,9 +391,11 @@ const styles = StyleSheet.create({
     width: 100,
     height: 120,
     marginHorizontal: 4,
-    backgroundColor: '#1e293b',
+    backgroundColor: 'rgba(31, 41, 55, 0.8)',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.secondary,
   },
   controls: {
     flexDirection: 'row',
@@ -376,26 +403,38 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 20,
     paddingHorizontal: 16,
-    backgroundColor: 'rgba(0,0,0,0.8)',
+    backgroundColor: 'rgba(17, 24, 39, 0.9)',
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
   },
   controlButton: {
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: '#64748b',
+    backgroundColor: COLORS.primary,
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 8,
+    ...SHADOWS.neon,
   },
   controlButtonOff: {
-    backgroundColor: '#ef4444',
+    backgroundColor: COLORS.textSecondary,
   },
   endButton: {
-    backgroundColor: '#ef4444',
+    backgroundColor: COLORS.error,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    justifyContent: 'flex-end',
   },
   chatContainer: {
-    flex: 1,
-    backgroundColor: 'white',
+    height: '70%',
+    backgroundColor: COLORS.background,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
   chatHeader: {
     flexDirection: 'row',
@@ -403,12 +442,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
+    borderBottomColor: COLORS.border,
+    backgroundColor: 'rgba(31, 41, 55, 0.5)',
   },
   chatTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1e293b',
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: COLORS.primary,
+    letterSpacing: 1,
   },
   chatMessages: {
     flex: 1,
@@ -417,47 +458,55 @@ const styles = StyleSheet.create({
   messageContainer: {
     marginBottom: 16,
     padding: 12,
-    backgroundColor: '#f1f5f9',
-    borderRadius: 8,
+    backgroundColor: 'rgba(31, 41, 55, 0.5)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 4,
   },
   messageSender: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#137fec',
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: COLORS.secondary,
     marginBottom: 4,
+    letterSpacing: 1,
   },
   messageText: {
     fontSize: 14,
-    color: '#1e293b',
+    color: COLORS.text,
     marginBottom: 4,
   },
   messageTime: {
     fontSize: 10,
-    color: '#64748b',
+    color: COLORS.textSecondary,
+    alignSelf: 'flex-end',
   },
   chatInput: {
     flexDirection: 'row',
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
+    borderTopColor: COLORS.border,
+    backgroundColor: 'rgba(31, 41, 55, 0.3)',
   },
   messageInput: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
-    borderRadius: 8,
+    borderColor: COLORS.border,
+    borderRadius: 4,
     paddingHorizontal: 12,
     paddingVertical: 8,
     marginRight: 8,
     maxHeight: 100,
+    color: COLORS.text,
+    backgroundColor: 'rgba(0,0,0,0.2)',
   },
   sendButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#137fec',
+    backgroundColor: COLORS.primary,
     justifyContent: 'center',
     alignItems: 'center',
+    ...SHADOWS.neon,
   },
 });
 
