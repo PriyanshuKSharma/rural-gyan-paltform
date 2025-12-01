@@ -81,189 +81,211 @@ const SignUp = () => {
   };
 
   return (
-    <div className="font-display bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-      <div className="relative flex min-h-screen w-full flex-col items-center group/design-root overflow-x-hidden">
-        <div className="w-full max-w-4xl px-4 md:px-0">
-          {/* Header */}
-          <header className="flex items-center justify-between whitespace-nowrap border-b border-gray-200 dark:border-gray-700 py-4 font-display">
-            <div className="flex items-center gap-4">
-              <img 
-                className="h-10 w-auto" 
-                alt="Emblem of India"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuClKYVkL99PPgtNPy4yjYFXUHFURDFe4yDSeDNrPlyhU97rG3iwNbzQOAeqbsWw-zyDdByjP-cEmLUrhSjCRPFM4d3ASQ8dPDKY0E64mq-AbrQoNk6dAkUSqiplmbAB8DP055HuNRb8EDKyCcnZhLdC3wxniwF3osaOFnJqd54B4Vqa2YhL0HBLMX-Uvpwtybl81LiUeTjjzstEg01O3shT1CRnwatS6xaZBxAHbKCsiL3IFbz9GHOaJfHo9WWvsNokFtkPYsogLScM" 
-              />
-              <div className="flex items-center gap-2">
-                <div className="size-5 text-blue-600">
-                  <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                    <path clipRule="evenodd" d="M24 4H42V17.3333V30.6667H24V44H6V30.6667V17.3333H24V4Z"
-                          fill="currentColor" fillRule="evenodd"></path>
-                  </svg>
-                </div>
-                <h2 className="text-gray-900 dark:text-white text-lg font-bold tracking-tight">NDEMLP</h2>
-              </div>
+    <div className="min-h-screen w-full flex items-center justify-center cyber-bg font-mono overflow-hidden relative">
+      {/* Background Overlay Effects */}
+      <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1535868463750-c78d9543614f?q=80&w=2076&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-overlay pointer-events-none"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-900/50 to-gray-900 pointer-events-none"></div>
+      
+      {/* Scanline Effect */}
+      <div className="absolute inset-0 pointer-events-none z-50 opacity-10" style={{
+        background: 'linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.5) 51%)',
+        backgroundSize: '100% 4px'
+      }}></div>
+
+      <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-12 p-6 relative z-10">
+        {/* Left Panel - Branding */}
+        <div className="lg:w-1/2 flex flex-col justify-center space-y-8">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 border-2 border-cyan-500 relative flex items-center justify-center bg-gray-900/80 backdrop-blur">
+              <div className="absolute inset-0 border border-cyan-500 blur-[2px] opacity-50"></div>
+              <svg className="w-10 h-10 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
+              </svg>
             </div>
-            <button
-              onClick={toggleLanguage}
-              className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-blue-600/10 dark:bg-blue-600/20 text-blue-600 dark:text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-600/20 dark:hover:bg-blue-600/30 transition-colors"
-            >
-              <span className="truncate">{i18n.language === 'en' ? 'EN / HI' : 'हि / अं'}</span>
-            </button>
-          </header>
-          <main className="py-12 md:py-16">
-            <div className="mx-auto max-w-lg">
-              {/* Page Heading */}
-              <div className="text-center mb-8">
-                <h1 className="text-gray-900 dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">
-                  {t('createAccount')}
-                </h1>
-                <p className="text-gray-500 dark:text-gray-400 text-sm font-normal leading-normal mt-2">
-                  {t('alreadyHaveAccount')} 
-                  <button 
-                    onClick={() => navigate('/login')}
-                    className="font-medium text-blue-600 hover:underline ml-1"
-                  >
-                    {t('logIn')}
-                  </button>
-                </p>
-              </div>
-              {/* Form */}
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Full Name */}
-                <div className="flex flex-col">
-                  <label className="text-gray-800 dark:text-gray-200 text-base font-medium leading-normal pb-2" htmlFor="fullName">
-                    {t('fullName')}
-                  </label>
-                  <input
-                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-blue-600/50 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 focus:border-blue-600 dark:focus:border-blue-600 h-14 placeholder:text-gray-400 dark:placeholder:text-gray-500 p-[15px] text-base font-normal leading-normal transition-shadow"
-                    id="fullName"
-                    name="fullName"
-                    placeholder={t('enterFullName')}
-                    type="text"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                {/* Username or Email */}
-                <div className="flex flex-col">
-                  <label className="text-gray-800 dark:text-gray-200 text-base font-medium leading-normal pb-2" htmlFor="email">
-                    {t('emailAddress')}
-                  </label>
-                  <input
-                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-blue-600/50 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 focus:border-blue-600 dark:focus:border-blue-600 h-14 placeholder:text-gray-400 dark:placeholder:text-gray-500 p-[15px] text-base font-normal leading-normal transition-shadow"
-                    id="email"
-                    name="email"
-                    placeholder={t('enterEmail')}
-                    type="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                {/* Role Selector */}
-                <div className="flex flex-col">
-                  <label className="text-gray-800 dark:text-gray-200 text-base font-medium leading-normal pb-2" htmlFor="role">
-                    {t('yourRole')}
-                  </label>
-                  <div className="relative">
-                    <select
-                      className="form-select appearance-none w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-blue-600/50 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 focus:border-blue-600 dark:focus:border-blue-600 h-14 placeholder:text-gray-400 dark:placeholder:text-gray-500 px-[15px] text-base font-normal leading-normal transition-shadow"
-                      id="role"
-                      name="role"
-                      value={formData.role}
-                      onChange={handleChange}
-                      required
-                    >
-                      <option value="">{t('selectRole')}</option>
-                      <option value="student">{t('student')}</option>
-                      <option value="teacher">{t('teacher')}</option>
-                      <option value="admin">{t('administrator')}</option>
-                    </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 dark:text-gray-400">
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-                {/* Password */}
-                <div className="flex flex-col">
-                  <label className="text-gray-800 dark:text-gray-200 text-base font-medium leading-normal pb-2" htmlFor="password">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-blue-600/50 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 focus:border-blue-600 dark:focus:border-blue-600 h-14 placeholder:text-gray-400 dark:placeholder:text-gray-500 p-[15px] pr-12 text-base font-normal leading-normal transition-shadow"
-                      id="password"
-                      name="password"
-                      placeholder="Enter your password"
-                      type={showPassword ? 'text' : 'password'}
-                      value={formData.password}
-                      onChange={handleChange}
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-600"
-                    >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
-                  </div>
-                  <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">
-                    Must be 8+ characters, including a number and a symbol.
-                  </p>
-                </div>
-                {/* Confirm Password */}
-                <div className="flex flex-col">
-                  <label className="text-gray-800 dark:text-gray-200 text-base font-medium leading-normal pb-2" htmlFor="confirmPassword">
-                    Confirm Password
-                  </label>
-                  <input
-                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-blue-600/50 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 focus:border-blue-600 dark:focus:border-blue-600 h-14 placeholder:text-gray-400 dark:placeholder:text-gray-500 p-[15px] text-base font-normal leading-normal transition-shadow"
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    placeholder="Confirm your new password"
-                    type="password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                {/* CTA Button */}
-                <div className="pt-4">
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="flex w-full min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-14 px-4 bg-blue-600 text-white text-base font-bold leading-normal tracking-wide hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-600/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <span className="truncate">{loading ? 'Creating Account...' : 'Create Account'}</span>
-                  </button>
-                </div>
-              </form>
-            </div>
-          </main>
-          {/* Footer */}
-          <footer className="text-center py-8 mt-12 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex justify-center items-center gap-6 text-sm">
-              <a className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-600 hover:underline" href="#">
-                Terms of Service
-              </a>
-              <a className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-600 hover:underline" href="#">
-                Privacy Policy
-              </a>
-              <a className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-600 hover:underline" href="#">
-                Accessibility
-              </a>
-            </div>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-4">
-              © 2024 National Digital Education & Management Learning Platform. All Rights Reserved.
+            <h1 className="text-4xl font-black tracking-tighter text-white cyber-glitch-text" data-text="NDEMLP">
+              NDEMLP
+            </h1>
+          </div>
+          
+          <div className="space-y-4">
+            <h2 className="text-5xl lg:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-600 leading-tight">
+              JOIN THE<br/>NETWORK
+            </h2>
+            <p className="text-cyan-100/70 text-lg max-w-md border-l-2 border-cyan-500 pl-4">
+              Initialize your neural link and access the future of education.
             </p>
-          </footer>
+          </div>
+
+          <div className="flex gap-4 text-xs font-bold tracking-widest text-cyan-700 uppercase">
+            <span>System: Online</span>
+            <span>//</span>
+            <span>Nodes: 8,492</span>
+            <span>//</span>
+            <span>Secured: True</span>
+          </div>
+        </div>
+
+        {/* Right Panel - Sign Up Form */}
+        <div className="lg:w-1/2 flex items-center justify-center">
+          <div className="cyber-card w-full max-w-md p-8 lg:p-12">
+            <div className="absolute top-0 right-0 p-4">
+              <div className="flex gap-1">
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              </div>
+            </div>
+
+            <div className="mb-8 text-center relative">
+              <h3 className="text-2xl font-bold text-white uppercase tracking-widest mb-2">
+                {t('createAccount')}
+              </h3>
+              <div className="h-1 w-20 bg-gradient-to-r from-cyan-500 to-purple-600 mx-auto"></div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Full Name */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-cyan-500 uppercase tracking-wider">
+                  {t('fullName')}
+                </label>
+                <input
+                  id="fullName"
+                  name="fullName"
+                  type="text"
+                  required
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  className="cyber-input py-2"
+                  placeholder="ENTER_FULL_NAME"
+                />
+              </div>
+
+              {/* Email */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-cyan-500 uppercase tracking-wider">
+                  {t('emailAddress')}
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="cyber-input py-2"
+                  placeholder="ENTER_EMAIL_ADDRESS"
+                />
+              </div>
+
+              {/* Role */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-cyan-500 uppercase tracking-wider">
+                  {t('yourRole')}
+                </label>
+                <div className="relative">
+                  <select
+                    id="role"
+                    name="role"
+                    required
+                    value={formData.role}
+                    onChange={handleChange}
+                    className="cyber-input py-2 appearance-none"
+                  >
+                    <option value="" className="bg-gray-900 text-gray-400">SELECT_ROLE</option>
+                    <option value="student" className="bg-gray-900 text-cyan-100">STUDENT</option>
+                    <option value="teacher" className="bg-gray-900 text-cyan-100">TEACHER</option>
+                    <option value="admin" className="bg-gray-900 text-cyan-100">ADMINISTRATOR</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-cyan-500">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Password */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-cyan-500 uppercase tracking-wider">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="cyber-input py-2 pr-12"
+                    placeholder="CREATE_PASSWORD"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-cyan-700 hover:text-cyan-400 transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm Password */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-cyan-500 uppercase tracking-wider">
+                  Confirm Password
+                </label>
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  required
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="cyber-input py-2"
+                  placeholder="CONFIRM_PASSWORD"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="cyber-btn-primary w-full mt-6 group"
+              >
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  {loading ? 'INITIALIZING...' : 'CREATE ACCOUNT'}
+                  {!loading && (
+                    <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  )}
+                </span>
+              </button>
+            </form>
+
+            <div className="mt-6 pt-4 border-t border-gray-800 flex justify-between items-center">
+              <button
+                onClick={toggleLanguage}
+                className="text-xs font-bold text-gray-500 hover:text-cyan-400 transition-colors uppercase tracking-wider flex items-center gap-2"
+              >
+                <div className="w-2 h-2 bg-gray-700 rounded-full"></div>
+                {i18n.language === 'en' ? 'LANG: HI' : 'LANG: EN'}
+              </button>
+              
+              <button
+                onClick={() => navigate('/login')}
+                className="text-xs font-bold text-cyan-600 hover:text-cyan-400 transition-colors uppercase tracking-wider"
+              >
+                {t('logIn')} &gt;
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 };
+
 
 export default SignUp;
