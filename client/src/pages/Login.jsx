@@ -26,14 +26,14 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.username || !formData.password) {
       setError('Please fill in all fields');
       return;
     }
 
     const result = await login(formData);
-    
+
     if (result.success) {
       toast.success('Login successful');
     } else {
@@ -47,149 +47,175 @@ const Login = () => {
   };
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 font-display text-gray-900 dark:text-gray-100">
-      <div className="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
-        <div className="layout-container flex h-full grow flex-col">
-          <header className="flex items-center justify-between whitespace-nowrap px-6 sm:px-10 py-4 absolute top-0 left-0 right-0 z-10">
-            <div className="flex items-center gap-3 text-gray-900 dark:text-gray-100">
-              <div className="w-8 h-8">
-                <svg fill="currentColor" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M25,5.19A19.81,19.81,0,1,0,44.81,25,19.83,19.83,0,0,0,25,5.19ZM11.69,25a13.31,13.31,0,1,1,22,11.23A13.23,13.23,0,0,1,11.69,25Z"></path>
-                  <path d="M25,12.44a1,1,0,0,0-1,1v13.1a1,1,0,0,0,2,0V13.44A1,1,0,0,0,25,12.44Z"></path>
-                  <path d="M25,30.31a1,1,0,0,0-1,1v5.25a1,1,0,0,0,2,0V31.31A1,1,0,0,0,25,30.31Z"></path>
-                  <path d="M25,19.19a5.81,5.81,0,1,0,5.81,5.81A5.81,5.81,0,0,0,25,19.19Zm0,9.62A3.81,3.81,0,1,1,28.81,25,3.81,3.81,0,0,1,25,28.81Z"></path>
+    <div className="min-h-screen w-full flex items-center justify-center cyber-bg font-mono overflow-hidden relative">
+      {/* Background Overlay Effects */}
+      <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1535868463750-c78d9543614f?q=80&w=2076&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-overlay pointer-events-none"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-900/50 to-gray-900 pointer-events-none"></div>
+      
+      {/* Scanline Effect */}
+      <div className="absolute inset-0 pointer-events-none z-50 opacity-10" style={{
+        background: 'linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.5) 51%)',
+        backgroundSize: '100% 4px'
+      }}></div>
+
+      <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-12 p-6 relative z-10">
+        {/* Left Panel - Branding */}
+        <div className="lg:w-1/2 flex flex-col justify-center space-y-8">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 border-2 border-cyan-500 relative flex items-center justify-center bg-gray-900/80 backdrop-blur">
+              <div className="absolute inset-0 border border-cyan-500 blur-[2px] opacity-50"></div>
+              <svg className="w-10 h-10 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
+              </svg>
+            </div>
+            <h1 className="text-4xl font-black tracking-tighter text-white cyber-glitch-text" data-text="NDEMLP">
+              NDEMLP
+            </h1>
+          </div>
+          
+          <div className="space-y-4">
+            <h2 className="text-5xl lg:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-600 leading-tight">
+              FUTURE OF<br/>LEARNING
+            </h2>
+            <p className="text-cyan-100/70 text-lg max-w-md border-l-2 border-cyan-500 pl-4">
+              {t('platformTagline')}
+            </p>
+          </div>
+
+          <div className="flex gap-4 text-xs font-bold tracking-widest text-cyan-700 uppercase">
+            <span>System: Online</span>
+            <span>//</span>
+            <span>Ver: 2.0.77</span>
+            <span>//</span>
+            <span>Secured: True</span>
+          </div>
+
+          {/* Cyber Demo Credentials */}
+          <div className="mt-auto pt-8">
+            <div className="bg-black/40 border border-cyan-900/50 p-4 text-[10px] font-mono text-cyan-600 backdrop-blur-sm max-w-xs">
+              <div className="uppercase mb-2 text-cyan-400 border-b border-cyan-900/50 pb-1 flex items-center gap-2">
+                <Lock size={10} />
+                Access Codes
+              </div>
+              <div className="grid grid-cols-[60px_1fr] gap-y-1">
+                <span>ADMIN:</span> <span className="text-cyan-100">admin / admin123</span>
+                <span>TEACHER:</span> <span className="text-cyan-100">teacher1 / teacher123</span>
+                <span>STUDENT:</span> <span className="text-cyan-100">student1 / student123</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Panel - Login Form */}
+        <div className="lg:w-1/2 flex items-center justify-center">
+          <div className="cyber-card w-full max-w-md p-8 lg:p-12">
+            <div className="absolute top-0 right-0 p-4">
+              <div className="flex gap-1">
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              </div>
+            </div>
+
+            <div className="mb-8 text-center relative">
+              <h3 className="text-2xl font-bold text-white uppercase tracking-widest mb-2">
+                {t('loginTitle')}
+              </h3>
+              <div className="h-1 w-20 bg-gradient-to-r from-cyan-500 to-purple-600 mx-auto"></div>
+            </div>
+
+            {error && (
+              <div className="mb-6 p-4 bg-red-900/30 border border-red-500/50 text-red-400 text-sm font-bold tracking-wide flex items-center gap-3">
+                <div className="w-1 h-full bg-red-500 absolute left-0 top-0"></div>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
+                {error}
               </div>
-              <h2 className="text-lg font-bold tracking-tight">NDEMLP</h2>
-            </div>
-            <button
-              onClick={toggleLanguage}
-              className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 text-sm font-bold leading-normal tracking-[0.015em]"
-            >
-              <span className="truncate">{i18n.language === 'en' ? 'English/Hindi' : 'हिंदी/अंग्रेजी'}</span>
-            </button>
-          </header>
-          <main className="flex flex-1 w-full">
-            <div className="flex w-full min-h-screen">
-              <div className="hidden lg:flex flex-col justify-center items-start w-1/2 bg-gray-100 dark:bg-gray-800 p-12 relative overflow-hidden">
-                <div className="w-full h-full bg-center bg-no-repeat bg-cover aspect-auto opacity-10"
-                     style={{backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBRAajQTMhoAINRYSwVSRxsLcfS3FKEjrD1verCNzfdzbqXOVZDnCr_jvwZOyqS33sl9-m-EQu0YOROshUz8Z-9yn6LeLTlm8HyseU5vcGjN7rK58QPFxPuOaGTtr-hSevurv2LS7pFpCwFwWsr3eDQoJhmTSfGk1tsRbFIxj8-4kUzmK8cOYgLnR01WEMEbDwR4_Y3fKRLPlijG2hasQO3KLKFyA6IFyGIZy63QBvR_brSNsvwlWAZlP31Ix3jA7niOxFYauq3aFGk')"}}>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-cyan-500 uppercase tracking-wider">
+                  {t('username')}
+                </label>
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  required
+                  value={formData.username}
+                  onChange={handleChange}
+                  className="cyber-input"
+                  placeholder="ENTER_USERNAME"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-bold text-cyan-500 uppercase tracking-wider">
+                    {t('password')}
+                  </label>
+                  <a href="#" className="text-xs text-purple-400 hover:text-purple-300 transition-colors uppercase tracking-wider">
+                    {t('forgotPassword')}?
+                  </a>
                 </div>
-                <div className="absolute inset-0 p-12 flex flex-col justify-center">
-                  <h1 className="text-4xl font-black leading-tight tracking-tight text-gray-900 dark:text-gray-100 mb-4">
-                    {t('platformTitle')}
-                  </h1>
-                  <p className="text-lg text-gray-600 dark:text-gray-400">
-                    {t('platformTagline')}
-                  </p>
+                <div className="relative">
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="cyber-input pr-12"
+                    placeholder="ENTER_PASSWORD"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-cyan-700 hover:text-cyan-400 transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
                 </div>
               </div>
-              <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
-                <div className="flex flex-col w-full max-w-md">
-                  <div className="flex flex-col gap-3 mb-8">
-                    <p className="text-gray-900 dark:text-gray-100 text-4xl font-black leading-tight tracking-[-0.033em]">
-                      {t('loginTitle')}
-                    </p>
-                    <p className="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">
-                      {t('loginSubtitle')}
-                    </p>
-                  </div>
-                  {error && (
-                    <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
-                      {error}
-                    </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="cyber-btn-primary w-full mt-4 group"
+              >
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  {loading ? 'PROCESSING...' : t('login')}
+                  {!loading && (
+                    <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
                   )}
-                  <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-                    <label className="flex flex-col w-full">
-                      <p className="text-gray-900 dark:text-gray-100 text-base font-medium leading-normal pb-2">
-                        {t('username')}
-                      </p>
-                      <input
-                        id="username"
-                        name="username"
-                        type="text"
-                        required
-                        value={formData.username}
-                        onChange={handleChange}
-                        className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-gray-100 focus:outline-0 focus:ring-2 focus:ring-blue-500/50 border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:border-blue-500 h-14 placeholder:text-gray-500 dark:placeholder:text-gray-500 p-[15px] text-base font-normal leading-normal"
-                        placeholder={t('enterUsername')}
-                      />
-                    </label>
-                    <label className="flex flex-col w-full">
-                      <div className="flex justify-between items-center pb-2">
-                        <p className="text-gray-900 dark:text-gray-100 text-base font-medium leading-normal">
-                          {t('password')}
-                        </p>
-                        <a className="text-sm font-medium text-blue-600 hover:underline" href="#">
-                          {t('forgotPassword')}
-                        </a>
-                      </div>
-                      <div className="relative w-full">
-                        <input
-                          id="password"
-                          name="password"
-                          type={showPassword ? 'text' : 'password'}
-                          required
-                          value={formData.password}
-                          onChange={handleChange}
-                          className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-gray-100 focus:outline-0 focus:ring-2 focus:ring-blue-500/50 border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:border-blue-500 h-14 placeholder:text-gray-500 dark:placeholder:text-gray-500 p-[15px] pr-12 text-base font-normal leading-normal"
-                          placeholder={t('enterPassword')}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-500 dark:text-gray-400"
-                        >
-                          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                        </button>
-                      </div>
-                    </label>
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-14 px-4 bg-blue-600 text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <span className="truncate">{loading ? t('loggingIn') : t('login')}</span>
-                    </button>
-                  </form>
-                  
-                  {/* Sign Up Link */}
-                  <div className="mt-4 text-center">
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">
-                      {t('dontHaveAccount')}{' '}
-                      <button
-                        onClick={() => navigate('/signup')}
-                        className="font-medium text-blue-600 hover:underline"
-                      >
-                        {t('signUp')}
-                      </button>
-                    </p>
-                  </div>
-                  
-                  {/* Demo Credentials */}
-                  <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                    <h3 className="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-2">Demo Credentials:</h3>
-                    <div className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
-                      <div><strong>Admin:</strong> admin / admin123</div>
-                      <div><strong>Teacher:</strong> teacher1 / teacher123</div>
-                      <div><strong>Student:</strong> student1 / student123</div>
-                    </div>
-                  </div>
-                  <footer className="mt-10 pt-6 border-t border-gray-200 dark:border-gray-800 text-center text-sm text-gray-500 dark:text-gray-400">
-                    <div className="flex items-center justify-center gap-2 mb-4">
-                      <Lock size={16} />
-                      <span>Secured by National Informatics Centre (NIC)</span>
-                    </div>
-                    <div className="flex justify-center gap-x-4">
-                      <a className="hover:underline" href="#">Help</a>
-                      <span>·</span>
-                      <a className="hover:underline" href="#">Privacy Policy</a>
-                    </div>
-                  </footer>
-                </div>
-              </div>
+                </span>
+              </button>
+            </form>
+
+            <div className="mt-8 pt-6 border-t border-gray-800 flex justify-between items-center">
+              <button
+                onClick={toggleLanguage}
+                className="text-xs font-bold text-gray-500 hover:text-cyan-400 transition-colors uppercase tracking-wider flex items-center gap-2"
+              >
+                <div className="w-2 h-2 bg-gray-700 rounded-full"></div>
+                {i18n.language === 'en' ? 'LANG: HI' : 'LANG: EN'}
+              </button>
+              
+              <button
+                onClick={() => navigate('/signup')}
+                className="text-xs font-bold text-cyan-600 hover:text-cyan-400 transition-colors uppercase tracking-wider"
+              >
+                {t('signUp')} &gt;
+              </button>
             </div>
-          </main>
+          </div>
+
+
         </div>
       </div>
     </div>
