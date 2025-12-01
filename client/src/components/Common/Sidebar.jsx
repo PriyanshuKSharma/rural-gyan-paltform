@@ -69,92 +69,103 @@ const Sidebar = ({ isOpen, setIsOpen, userRole }) => {
       {/* Mobile overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <div className={`
-        fixed top-0 left-0 h-full w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out z-50
+        fixed top-0 left-0 h-full w-72 bg-gray-900 border-r border-cyan-900/50 shadow-[0_0_30px_rgba(0,243,255,0.1)] transform transition-transform duration-300 ease-in-out z-50
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0 lg:static lg:z-auto
+        flex flex-col
       `}>
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1535868463750-c78d9543614f?q=80&w=2076&auto=format&fit=crop')] bg-cover bg-center opacity-5 mix-blend-overlay pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-900/95 to-gray-900 pointer-events-none"></div>
+
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <GraduationCap className="text-white" size={20} />
+        <div className="relative z-10 p-6 border-b border-cyan-900/30">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 border border-cyan-500 bg-cyan-900/20 relative flex items-center justify-center backdrop-blur-sm">
+                <div className="absolute inset-0 border border-cyan-500 blur-[2px] opacity-50"></div>
+                <GraduationCap className="text-cyan-400 relative z-10" size={20} />
+              </div>
+              <div>
+                <h1 className="text-xl font-black text-white tracking-wider cyber-glitch-text" data-text="NDEMLP">NDEMLP</h1>
+                <p className="text-[10px] text-cyan-500 font-mono uppercase tracking-widest">Sys.Ver.2.0</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-lg font-bold text-gray-900 dark:text-white">EduMS</h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">{userRole}</p>
-            </div>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="lg:hidden p-1 text-cyan-500 hover:text-white transition-colors"
+            >
+              <X size={24} />
+            </button>
           </div>
-          <button
-            onClick={() => setIsOpen(false)}
-            className="lg:hidden p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            <X size={20} className="text-gray-500 dark:text-gray-400" />
-          </button>
         </div>
 
         {/* User Info */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-medium text-sm">
-                {user?.fullName?.charAt(0)?.toUpperCase()}
-              </span>
+        <div className="relative z-10 p-6 border-b border-cyan-900/30 bg-gray-900/50">
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 rounded-none border-2 border-purple-500 p-0.5 relative">
+              <div className="w-full h-full bg-purple-900/20 flex items-center justify-center">
+                <span className="text-purple-400 font-bold text-lg">
+                  {user?.fullName?.charAt(0)?.toUpperCase()}
+                </span>
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-gray-900"></div>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+              <p className="text-sm font-bold text-white truncate uppercase tracking-wide">
                 {user?.fullName}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                {user?.email}
+              <p className="text-xs text-cyan-500/70 truncate font-mono">
+                {userRole} // {user?.email}
               </p>
             </div>
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="relative z-10 flex-1 p-4 space-y-2 overflow-y-auto custom-scrollbar">
           {menuItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
               className={({ isActive }) => `
-                flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+                flex items-center space-x-3 px-4 py-3 border-l-2 transition-all duration-200 group
                 ${isActive 
-                  ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' 
-                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  ? 'border-cyan-500 bg-cyan-900/20 text-cyan-400 shadow-[inset_10px_0_20px_-10px_rgba(0,243,255,0.2)]' 
+                  : 'border-transparent text-gray-400 hover:text-cyan-200 hover:bg-white/5'
                 }
               `}
               onClick={() => setIsOpen(false)}
             >
-              <item.icon size={18} />
-              <span>{item.label}</span>
+              <item.icon size={20} className={`transition-transform duration-200 group-hover:scale-110 ${({isActive}) => isActive ? 'animate-pulse' : ''}`} />
+              <span className="font-mono text-sm tracking-wide uppercase">{item.label}</span>
             </NavLink>
           ))}
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
+        <div className="relative z-10 p-4 border-t border-cyan-900/30 bg-gray-900/80 space-y-2">
           <NavLink
             to={`/${userRole}/profile`}
-            className="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="flex items-center space-x-3 px-4 py-3 text-gray-400 hover:text-cyan-400 hover:bg-white/5 transition-colors border-l-2 border-transparent hover:border-cyan-500/50"
             onClick={() => setIsOpen(false)}
           >
-            <Settings size={18} />
-            <span>{t('profile')}</span>
+            <Settings size={20} />
+            <span className="font-mono text-sm tracking-wide uppercase">{t('profile')}</span>
           </NavLink>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+            className="w-full flex items-center space-x-3 px-4 py-3 text-red-500 hover:text-red-400 hover:bg-red-900/10 transition-colors border-l-2 border-transparent hover:border-red-500/50"
           >
-            <LogOut size={18} />
-            <span>{t('logout')}</span>
+            <LogOut size={20} />
+            <span className="font-mono text-sm tracking-wide uppercase">{t('logout')}</span>
           </button>
         </div>
       </div>
