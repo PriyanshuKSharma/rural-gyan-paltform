@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Sidebar from '../components/Common/Sidebar';
 import Header from '../components/Common/Header';
@@ -8,6 +8,7 @@ import StudentVirtualClass from '../components/StudentVirtualClass';
 import Materials from '../components/Student/Materials';
 import AITutor from '../components/Student/AITutor';
 import CodeEditor from '../components/Student/CodeEditor';
+import QuizTaker from '../components/Student/QuizTaker';
 import Profile from '../components/Common/Profile';
 
 const StudentDashboard = () => {
@@ -25,6 +26,9 @@ const StudentDashboard = () => {
     };
     return routes[pathname] || t('dashboard');
   };
+
+  const location = useLocation();
+  const isCodeEditor = location.pathname.includes('code-editor');
 
   return (
     <div className="flex h-screen cyber-bg overflow-hidden font-mono">
@@ -47,17 +51,18 @@ const StudentDashboard = () => {
       <div className="flex-1 flex flex-col overflow-hidden relative z-10">
         <Header 
           onMenuClick={() => setSidebarOpen(true)}
-          title={getPageTitle(window.location.pathname)}
+          title={getPageTitle(location.pathname)}
         />
         
-        <main className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-cyan-900 scrollbar-track-gray-900">
-          <div className="max-w-7xl mx-auto">
+        <main className={`flex-1 overflow-y-auto ${isCodeEditor ? 'p-0 overflow-hidden' : 'p-6'} scrollbar-thin scrollbar-thumb-cyan-900 scrollbar-track-gray-900`}>
+          <div className={`${isCodeEditor ? 'h-full w-full' : 'max-w-7xl mx-auto'}`}>
             <Routes>
               <Route index element={<StudentHome />} />
               <Route path="class" element={<StudentVirtualClass />} />
               <Route path="materials" element={<Materials />} />
               <Route path="ai-tutor" element={<AITutor />} />
               <Route path="code-editor" element={<CodeEditor />} />
+              <Route path="quiz/:quizId" element={<QuizTaker />} />
               <Route path="profile" element={<Profile />} />
             </Routes>
           </div>
