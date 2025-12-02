@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import indiaMapComplete from '../assets/india_map_complete.png';
 
 const SignUp = () => {
   const { t, i18n } = useTranslation();
@@ -83,7 +84,10 @@ const SignUp = () => {
   return (
     <div className="min-h-screen w-full flex items-center justify-center cyber-bg font-mono overflow-hidden relative">
       {/* Background Overlay Effects */}
-      <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1535868463750-c78d9543614f?q=80&w=2076&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-overlay pointer-events-none"></div>
+      <div 
+        className="absolute inset-0 bg-contain bg-[15%_center] bg-no-repeat opacity-60 mix-blend-screen pointer-events-none"
+        style={{ backgroundImage: `url(${indiaMapComplete})` }}
+      ></div>
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-900/50 to-gray-900 pointer-events-none"></div>
       
       {/* Scanline Effect */}
