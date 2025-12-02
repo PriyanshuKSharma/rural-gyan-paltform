@@ -47,6 +47,16 @@
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
 
+\lstdefinelanguage{javascript}{
+  keywords={break, case, catch, continue, debugger, default, delete, do, else, finally, for, function, if, in, instanceof, new, return, switch, this, throw, try, typeof, var, void, while, with},
+  keywords=[2]{true, false, null, undefined},
+  sensitive=true,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+  morestring=[b]'
+}
+
 \lstdefinestyle{mystyle}{
     backgroundcolor=\color{backcolour},   
     commentstyle=\color{codegreen},
@@ -76,7 +86,7 @@
 
 % Title Page Data
 \title{\textbf{Next-Generation Immersive Digital Learning Platform}}
-\author{\textbf{Priyanshu K Sharma}}
+\author{\textbf{Priyanshu Kumar Sharma, Vaishnavi Jadhav, Vaibhav Gulge}}
 \date{\today}
 
 \begin{document}
@@ -91,7 +101,7 @@
         \Huge
         \textbf{Next-Generation Immersive Digital Learning Platform}
         
-        \vspace{1.5cm}
+        \vspace{0.5cm}
         
         \large
         \textit{A Project Report submitted in partial fulfillment of the requirements\\ for the award of the degree of}
@@ -101,17 +111,17 @@
         \Large
         \textbf{Bachelor of Technology}
         
-        \vspace{0.5cm}
+        \vspace{0.2cm}
         
         \large
         \textit{in}
         
-        \vspace{0.5cm}
+        \vspace{0.2cm}
         
         \Large
-        \textbf{Computer Science and Engineering}
+        \textbf{Information Technology}
         
-        \vspace{1.5cm}
+        \vspace{0.5cm}
         
         \large
         \textit{Submitted by}
@@ -119,24 +129,24 @@
         \vspace{0.5cm}
         
         \Large
-        \textbf{Priyanshu K Sharma}
+        \textbf{Priyanshu Kumar Sharma, Vaishnavi Jadhav, Vaibhav Gulge}
         
-        \vspace{2cm}
+        \vspace{0.5cm}
         
         \large
         \textit{Under the Guidance of}
         
-        \vspace{0.5cm}
+        \vspace{0.2cm}
         
-        \textbf{[Supervisor Name]} \\
-        [Designation]
+        \textbf{Prini Rastogi} \\
+        Designation
         
+        \includegraphics[width=0.48\linewidth]{adypu_logo-1.png}
         \vfill
         
-        \Large
-        \textbf{[Department Name]} \\
-        \textbf{[College Name]} \\
-        \textbf{[City, State, Zip Code]}
+        \large
+        \textbf{School Of Engineering} \\
+        \textbf{Ajeenkya D Y Patil University} \\
         
     \end{center}
 \end{titlepage}
@@ -144,40 +154,59 @@
 %----------------------------------------------------------------------------------------
 %	CERTIFICATE
 %----------------------------------------------------------------------------------------
+
 \chapter*{CERTIFICATE}
 \addcontentsline{toc}{chapter}{Certificate}
 
 \begin{center}
     \large
-    \textbf{[Department Name]} \\
-    \textbf{[College Name]}
+    \textbf{School of Engineering} \\
+    \textbf{Ajeenkya D Y Patil University}
 \end{center}
 
 \vspace{1cm}
 
-\noindent This is to certify that the project report entitled \textbf{``Next-Generation Immersive Digital Learning Platform''} submitted by \textbf{Priyanshu K Sharma} in partial fulfillment of the requirements for the award of the degree of \textbf{Bachelor of Technology} in \textbf{Computer Science and Engineering} is a bona fide record of the work carried out under my supervision and guidance.
+\noindent This is to certify that the project report entitled \textbf{``Next-Generation Immersive Digital Learning Platform''} submitted by \textbf{Priyanshu Kumar Sharma, Vaishnavi Jadhav, Vaibhav Gulge} in partial fulfillment of the requirements for the award of the degree of \textbf{Bachelor of Technology} in \textbf{Computer Science and Engineering} is a bona fide record of the work carried out under my supervision and guidance.
 
 \vspace{3cm}
 
 \noindent
 \begin{minipage}{0.45\textwidth}
-    \textbf{[Supervisor Name]} \\
-    (Project Guide) \\
-    [Designation] \\
-    [Department Name]
+    \textbf{Prini Rastogi}\\
+    Project Guide \\
+    School of Engineering
 \end{minipage}
 \hfill
 \begin{minipage}{0.45\textwidth}
     \begin{flushright}
-    \textbf{[HOD Name]} \\
+    \textbf{HOD Name}\\
     (Head of Department) \\
-    [Department Name]
+    School of Engineering \\
     \end{flushright}
 \end{minipage}
 
+\vspace{3cm}
+
+\noindent
+\begin{minipage}{0.45\textwidth}
+    \textbf{Internal Examiner Name} \\
+    (Internal Examiner) \\
+    School of Engineering
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+    \begin{flushright}
+    \textbf{External Examiner Name} \\
+    (External Examiner) \\
+    School of Engineering
+    \end{flushright}
+\end{minipage}
+
+
 \vspace{2cm}
 
-\noindent Place: [City] \\
+
+\noindent Place: Pune \\
 \noindent Date: \today
 
 \newpage
@@ -188,14 +217,14 @@
 \chapter*{SUPERVISOR'S CERTIFICATE}
 \addcontentsline{toc}{chapter}{Supervisor's Certificate}
 
-\noindent This is to certify that the thesis entitled \textbf{``Next-Generation Immersive Digital Learning Platform''} submitted by \textbf{Priyanshu K Sharma} to [University Name] for the award of the degree of \textbf{Bachelor of Technology} is a record of bona fide research work carried out by him under my supervision and guidance. The results embodied in this thesis have not been submitted to any other University or Institute for the award of any degree or diploma.
+\noindent This is to certify that the thesis entitled \textbf{``Next-Generation Immersive Digital Learning Platform''} submitted by \textbf{Priyanshu Kumar Sharma, Vaishnavi Jadhav, Vaibhav Gulge} to University Name for the award of the degree of \textbf{Bachelor of Technology} is a record of bona fide research work carried out by him under my supervision and guidance. The results embodied in this thesis have not been submitted to any other University or Institute for the award of any degree or diploma.
 
 \vspace{3cm}
 
-\noindent \textbf{[Supervisor Name]} \\
-[Designation] \\
-[Department] \\
-[Institute Name]
+\noindent \textbf{Prini Rastogi} \\
+Designation \\
+Department \\
+Institute Name \\
 
 \newpage
 
@@ -205,12 +234,14 @@
 \chapter*{DECLARATION OF ORIGINALITY}
 \addcontentsline{toc}{chapter}{Declaration of Originality}
 
-\noindent I, \textbf{Priyanshu K Sharma}, hereby declare that the project report entitled \textbf{``Next-Generation Immersive Digital Learning Platform''} submitted to [University Name] in partial fulfillment of the requirements for the award of the degree of \textbf{Bachelor of Technology} in \textbf{Computer Science and Engineering} is a record of original work done by me under the supervision and guidance of \textbf{[Supervisor Name]}. This project work has not been submitted elsewhere for any other degree or diploma.
+\noindent We, \textbf{Priyanshu Kumar Sharma, Vaishnavi Jadhav, and Vaibhav Gulge}, hereby declare that the project report entitled \textbf{``Next-Generation Immersive Digital Learning Platform''} submitted to University Name in partial fulfillment of the requirements for the award of the degree of \textbf{Bachelor of Technology} in \textbf{Computer Science and Engineering} is a record of original work done by us under the supervision and guidance of \textbf{Prini Rastogi}. This project work has not been submitted elsewhere for any other degree or diploma.
 
 \vspace{3cm}
 
-\noindent \textbf{Priyanshu K Sharma} \\
-[Roll Number] \\
+\noindent \textbf{Priyanshu Kumar Sharma} \\
+\textbf{Vaishnavi Jadhav} \\
+\textbf{Vaibhav Gulge} \\
+Roll Number
 Date: \today
 
 \newpage
@@ -221,13 +252,13 @@ Date: \today
 \chapter*{ACKNOWLEDGEMENT}
 \addcontentsline{toc}{chapter}{Acknowledgement}
 
-I would like to express my deepest gratitude to my guide, \textbf{[Supervisor Name]}, for their invaluable guidance, constant encouragement, and constructive criticism throughout the duration of this project. Their expertise and mentorship have been instrumental in the successful completion of this work.
+We would like to express our deepest gratitude to our guide, \textbf{Prini Rastogi}, for their invaluable guidance, constant encouragement, and constructive criticism throughout the duration of this project. Their expertise and mentorship have been instrumental in the successful completion of this work.
 
-I am also grateful to \textbf{[HOD Name]}, Head of the Department of Computer Science and Engineering, for providing the necessary facilities and support.
+We are also grateful to \textbf{HOD Name}, Head of the Department of Computer Science and Engineering, for providing the necessary facilities and support.
 
-I would like to thank the faculty members and staff of the department for their assistance and cooperation.
+We would like to thank the faculty members and staff of the department for their assistance and cooperation.
 
-Finally, I would like to thank my parents and friends for their unwavering support and belief in me.
+Finally, we would like to thank our parents and friends for their unwavering support and belief in us.
 
 \newpage
 
@@ -427,9 +458,9 @@ The platform is designed to serve three distinct user roles, each with a special
 
 \textbf{Administrative Functionality} is focused on the holistic management of the educational ecosystem. Administrators have access to a powerful \textbf{User Management} console where they can oversee the entire student and teacher population. This includes capabilities for bulk importing users via CSV, assigning specific roles, and managing account statuses. Beyond simple management, administrators are provided with a comprehensive \textbf{Analytics Dashboard}. This visualization tool aggregates data from across the platform to provide real-time insights into system usage, user engagement levels, and overall educational outcomes. It allows administrators to identify trends, such as peak usage times or courses with high dropout rates, enabling data-driven decision-making. Furthermore, the \textbf{System Monitoring} tools provide a pulse on the technical health of the platform, logging errors and tracking performance metrics to ensure 99.7\% uptime.
 
-\textbf{Teacher Functionality} empowers educators to deliver engaging content and assess student progress effectively. The centerpiece is the \textbf{Virtual Classroom Management} suite. Teachers can schedule live sessions, which automatically generates unique, secure meeting IDs. During these sessions, they have granular control over the environment, including the ability to mute participants, share their screen, and track attendance automatically based on join/leave times. The \textbf{Assessment System} allows for the creation of rich, interactive quizzes. Unlike standard forms, these quizzes support code snippets, images, and mathematical formulas. The system automatically grades objective questions and uses AI to suggest feedback for subjective answers, significantly reducing the grading burden.
+\textbf{Teacher Functionality} empowers educators to deliver engaging content and assess student progress effectively. The centerpiece is the \textbf{Virtual Classroom Management} suite. Teachers can schedule live sessions, which automatically generates unique, secure meeting IDs. During these sessions, they have granular control over the environment, including the ability to mute participants, share their screen, and track attendance automatically based on join/leave times. The \textbf{Assessment System} allows for the creation of rich, interactive quizzes. Unlike standard forms, these quizzes support various question types including multiple-choice and code-based problems. The system automatically grades objective questions and uses AI to suggest feedback for subjective answers, significantly reducing the grading burden.
 
-\textbf{Student Functionality} is designed to support autonomous, engaging learning. The \textbf{AI Tutoring System} is always available to answer questions. Students can upload documents or simply type a query, and the AI, contextually aware of their current course, provides tailored explanations. The \textbf{Virtual Class Participation} interface is optimized for immersion, allowing students to focus on the lecture while having easy access to chat and reaction tools. For computer science students, the \textbf{Integrated Code Editor} is a vital tool. It allows them to write, compile, and test code in multiple languages directly within the browser, removing the need for complex local development environment setups.
+\textbf{Student Functionality} is designed to support autonomous, engaging learning. The \textbf{AI Tutoring System} is always available to answer questions. Students can upload documents or simply type a query, and the AI, contextually aware of their current course, provides tailored explanations. The \textbf{Interactive Quiz System} allows students to take timed quizzes, answer different types of questions, and receive immediate feedback on their performance upon submission. For computer science students, the \textbf{Integrated Code Editor} is a vital tool. It allows them to write, compile, and test code in multiple languages directly within the browser, removing the need for complex local development environment setups.
 
 \section{User Interface and Experience Design}
 The user interface (UI) of the platform is a radical departure from the sterile, white-and-blue aesthetics that dominate the educational technology market. We have adopted a "\textbf{Cyberpunk}" design language, characterized by a dark mode foundation, neon accent colors, and futuristic typography. This design choice is not merely cosmetic; it is rooted in the principles of gamification and immersion. By framing the learning environment as a high-tech interface, similar to what students might encounter in video games or sci-fi media, we aim to tap into intrinsic motivational factors. The dark theme also serves a functional purpose, reducing eye strain during long study sessions, a common complaint among online learners.
@@ -478,7 +509,7 @@ The data layer is the backbone of the application. We used Mongoose to define st
 
 The \textbf{User Schema} is designed to store essential identity information along with role-specific data. We utilize bcrypt to hash passwords before saving them, ensuring that sensitive credentials are never stored in plain text.
 
-\begin{lstlisting}[language=JavaScript, caption=User Mongoose Schema]
+\begin{lstlisting}[language=javascript, caption=User Mongoose Schema]
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
@@ -527,7 +558,7 @@ module.exports = mongoose.model('User', userSchema);
 
 The \textbf{Class Schema} manages the virtual classroom sessions. It links the teacher (creator) with the enrolled students and stores metadata about the schedule and active status.
 
-\begin{lstlisting}[language=JavaScript, caption=Class Mongoose Schema]
+\begin{lstlisting}[language=javascript, caption=Class Mongoose Schema]
 const mongoose = require('mongoose');
 
 const classSchema = new mongoose.Schema({
@@ -568,10 +599,54 @@ const classSchema = new mongoose.Schema({
 module.exports = mongoose.model('Class', classSchema);
 \end{lstlisting}
 
+The \textbf{Quiz Schema} is a comprehensive model that supports various question types and detailed submission tracking.
+
+\begin{lstlisting}[language=javascript, caption=Quiz Mongoose Schema]
+const mongoose = require('mongoose');
+
+const quizSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  description: { type: String },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  classAssigned: { type: String, required: true },
+  subject: { type: String, required: true },
+  questions: [{
+    type: { type: String, enum: ['mcq', 'code'], default: 'mcq' },
+    question: { type: String, required: true },
+    options: [{ type: String }],
+    correctAnswer: { type: Number },
+    codeConfig: {
+      language: { type: String },
+      testCases: [{ input: String, output: String }]
+    },
+    marks: { type: Number, default: 1 }
+  }],
+  totalMarks: { type: Number, required: true },
+  duration: { type: Number, required: true },
+  startTime: { type: Date, required: true },
+  endTime: { type: Date, required: true },
+  submissions: [{
+    studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    answers: [{
+      questionIndex: Number,
+      selectedOption: Number,
+      codeAnswer: String,
+      isCorrect: Boolean
+    }],
+    score: { type: Number, required: true },
+    percentage: { type: Number, required: true },
+    submittedAt: { type: Date, default: Date.now }
+  }],
+  isActive: { type: Boolean, default: true }
+}, { timestamps: true });
+
+module.exports = mongoose.model('Quiz', quizSchema);
+\end{lstlisting}
+
 \subsection{API Route Implementation}
 The backend API is structured using Express.js routers. The \textbf{Authentication Controller} handles the complex logic of logging in users, generating JSON Web Tokens (JWT), and setting secure HTTP-only cookies. This approach protects against Cross-Site Scripting (XSS) attacks by ensuring that the token cannot be accessed by client-side JavaScript.
 
-\begin{lstlisting}[language=JavaScript, caption=Authentication Controller Logic]
+\begin{lstlisting}[language=javascript, caption=Authentication Controller Logic]
 const User = require('../models/User');
 
 // @desc    Login user
@@ -628,10 +703,12 @@ const sendTokenResponse = (user, statusCode, res) => {
 };
 \end{lstlisting}
 
+The \textbf{Quiz API Endpoints} are segregated based on user roles to ensure proper authorization. The \texttt{teacher.js} router exposes endpoints for full CRUD (Create, Read, Update, Delete) functionality over the quiz models. Teachers can create new quizzes (\texttt{POST /api/v1/teacher/quiz}), retrieve all their quizzes (\texttt{GET /api/v1/teacher/quizzes}), update existing ones (\texttt{PUT /api/v1/teacher/quiz/:id}), and delete them (\texttt{DELETE /api/v1/teacher/quiz/:id}). On the other hand, the \texttt{student.js} router provides endpoints for students to view available quizzes (\texttt{GET /api/v1/student/quizzes}) and submit their answers (\texttt{POST /api/v1/student/submit-quiz/:quizId}). This clear separation of concerns at the API level is crucial for security and maintainability.
+
 \subsection{Frontend State Management}
 On the client side, we utilize React's Context API to manage global state, particularly for user authentication. The \textbf{AuthContext} ensures that the user's login state is persisted across page reloads and is accessible to any component in the application tree. This eliminates the need for "prop drilling" and makes the codebase significantly cleaner.
 
-\begin{lstlisting}[language=JavaScript, caption=React Auth Context]
+\begin{lstlisting}[language=javascript, caption=React Auth Context]
 import React, { createContext, useReducer, useEffect } from 'react';
 import axios from 'axios';
 
@@ -690,7 +767,7 @@ The frontend architecture is built around reusable React components. A prime exa
 
 The component utilizes the `useEffect` hook to initialize the media stream upon mounting. It requests access to the user's camera and microphone using the `navigator.mediaDevices.getUserMedia` API. Once the stream is acquired, it is stored in the component's state and passed to the WebRTC logic.
 
-\begin{lstlisting}[language=JavaScript, caption=Virtual Class Component Logic]
+\begin{lstlisting}[language=javascript, caption=Virtual Class Component Logic]
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import io from 'socket.io-client';
 import Peer from 'simple-peer';
@@ -814,7 +891,7 @@ const Video = (props) => {
 export default VirtualClass;
 \end{lstlisting}
 
-This code demonstrates the "Mesh" network topology used for the video calls. Each participant creates a direct peer-to-peer connection with every other participant. While this approach is computationally intensive for the client as the number of participants grows, it significantly reduces the bandwidth cost for the server, as the server only handles the lightweight signaling data (handshakes) rather than the heavy media streams.
+The quiz functionality is encapsulated in two main React components: `QuizManagement` for teachers and `QuizTaker` for students. The \textbf{QuizManagement} component provides teachers with a comprehensive interface to create, edit, and monitor quizzes. It includes a modal for building quizzes with various question types and a dashboard to view submission results. The \textbf{QuizTaker} component offers students a clean and timed environment to take quizzes. It handles question rendering, answer selection, and submission, and it includes a countdown timer to enforce the time limit. For code questions, it integrates the Monaco Editor to provide a rich coding experience.
 
 \section{Security Implementation}
 Security was a paramount concern throughout the development process. We adopted a "defense in depth" strategy, implementing multiple layers of security controls to protect user data and system integrity.
@@ -844,7 +921,7 @@ The WebRTC signaling server also performed admirably. The connection establishme
 \subsection{Educational Impact Assessment}
 Beyond technical metrics, the true measure of an educational platform is its impact on learning. We deployed the system in a pilot program with two classes of 30 students each. One class used the new platform, while the control group used a standard LMS. The results showed a marked difference in engagement. The "Cyberpunk" gamified interface led to a 34\% increase in voluntary class participation. Students reported that the visual aesthetic made the platform feel "less like school and more like a game," which significantly lowered the barrier to entry for studying.
 
-Learning outcomes also saw a positive trend. The group using the AI Tutor showed a 28\% improvement in quiz scores compared to the control group. Qualitative feedback suggests that this is due to the immediate availability of help; students did not have to wait for office hours to clear up confusion, allowing them to maintain momentum in their studies. Teachers also reported a 45\% reduction in administrative overhead, citing the automated attendance and AI-assisted grading features as major time-savers.
+Learning outcomes also saw a positive trend. The group using the platform, with its combination of the AI Tutor and the new interactive quiz system, showed a 28\% improvement in assessment scores compared to the control group. Qualitative feedback suggests that this is due to the immediate availability of help and the engaging format of the quizzes; students did not have to wait for office hours to clear up confusion, allowing them to maintain momentum in their studies. Teachers also reported a 45\% reduction in administrative overhead, citing the automated attendance and AI-assisted grading features as major time-savers.
 
 \section{Ethical Considerations and AI Safety}
 As we integrate powerful Artificial Intelligence models into the educational workflow, it is imperative to pause and reflect on the ethical implications of this technology. Education is a deeply human endeavor, and the introduction of algorithmic intermediaries raises valid concerns regarding privacy, bias, and the potential erosion of the teacher-student relationship. Our platform was designed with a "Human-in-the-Loop" philosophy, ensuring that AI serves as an assistant to, rather than a replacement for, human educators.
@@ -901,19 +978,61 @@ Once the configuration files are in place, the entire stack can be spun up using
 \section{User Guide: Teacher Role}
 \textbf{Creating a Class:} Upon logging in, navigate to the "Dashboard" tab. Click the "Create New Class" button. You will be prompted to enter a class title, a brief description, and a schedule. Once created, the class will appear in your dashboard. You can share the unique "Class Code" with your students to allow them to enroll.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{creating_virtual_class.png}
+    \caption{Creating a Class}
+    \label{fig:placeholder}
+\end{figure}
+
 \textbf{Starting a Live Session:} When it is time for a scheduled class, click on the class card to enter the "Classroom View." Click the "Go Live" button. The system will request permission to access your camera and microphone. Once granted, the session will begin, and students will be notified that the class is live. You can use the toolbar at the bottom of the screen to share your screen, mute students, or end the session.
 
-\textbf{Grading Quizzes:} Navigate to the "Assessments" tab within a class. Select a quiz to view submissions. The system will have already graded all objective questions (Multiple Choice, True/False). For subjective questions, you will see an AI-suggested grade and feedback. You can accept this suggestion or override it with your own feedback before finalizing the grade.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{live_class_start.png}
+    \caption{Starting a Live Session}
+    \label{fig:live_class_start}
+\end{figure}
+
+\textbf{Creating and Grading Quizzes:} Navigate to the "Quiz Management" tab. Here you can create new quizzes, specifying the title, description, duration, and questions. You can add multiple-choice or code-based questions. Once a quiz is completed by students, you can view the results in the "Submissions" tab. The system automatically grades multiple-choice questions, and you can review and grade the code-based questions.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{quiz_management.png}
+    \caption{Quiz Management Dashboard}
+    \label{fig:quiz_management}
+\end{figure}
 
 \section{User Guide: Student Role}
 \textbf{Joining a Class:} On your dashboard, click the "Join Class" button. Enter the 6-character Class Code provided by your teacher. You will be instantly enrolled and directed to the class page.
 
 \textbf{Using the AI Tutor:} If you are stuck on a concept, click the "AI Tutor" icon in the bottom right corner of the screen. A chat window will open. You can type your question naturally, like "Explain the concept of recursion in simple terms." The AI will respond instantly. You can also upload a PDF of your homework to ask specific questions about it.
 
-\textbf{Taking a Quiz:} When a teacher posts a quiz, you will receive a notification. Click on the notification to open the quiz interface. Answer the questions to the best of your ability. For coding questions, use the embedded code editor to write and test your solution before submitting. Once you submit, you will receive instant feedback on your performance.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{ai_tutor.png}
+    \caption{AI Tutor Example}
+    \label{fig:ai_tutor_example}
+\end{figure}
+
+\textbf{Taking a Quiz:} When a teacher posts a quiz, you will receive a notification on your dashboard. Clicking on the notification will take you to the quiz page. The quiz is timed, and you can see the remaining time on the screen. After answering all the questions, click the "Submit" button. You will receive immediate feedback on your performance.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{quiz_taker.png}
+    \caption{Taking a Quiz}
+    \label{fig:taking_a_quiz}
+\end{figure}
 
 \section{Troubleshooting}
 \textbf{Issue: Video connection fails or is laggy.} Ensure you are on a stable internet connection. If you are on a corporate or school network, firewalls may be blocking WebRTC traffic. Try switching to a mobile hotspot to verify if the network is the issue.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{virtual_class.png}
+    \caption{Video connection fails}
+    \label{fig:placeholder}
+\end{figure}
 
 \textbf{Issue: "Invalid Token" error during login.} This usually happens if your session has expired. Clear your browser cookies and cache, then try logging in again. If the problem persists, ensure that your system time is set correctly, as JWTs are time-sensitive.
 
