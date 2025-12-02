@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FileText, Download, Eye, BookOpen, Video, Image } from 'lucide-react';
 import { studentAPI } from '../../services/api';
 import LoadingSpinner from '../Common/LoadingSpinner';
 
 const Materials = () => {
+  const navigate = useNavigate();
   const [materials, setMaterials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
@@ -76,36 +78,53 @@ const Materials = () => {
 
       {/* Materials Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {materials.length > 0 ? (
-          materials.map((material, index) => (
+        {materials
+          .filter(material => activeTab === 'all' || 
+            (activeTab === 'assignments' && material.type === 'assignment') ||
+            (activeTab === 'notes' && material.type === 'pdf') ||
+            (activeTab === 'videos' && material.type === 'video')
+          )
+          .map((material, index) => (
             <div key={index} className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center space-x-3">
-                  {getFileIcon(material.type)}
+                  {getFileIcon(material.type === 'assignment' ? 'document' : material.type)}
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900 dark:text-white">{material.title}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 capitalize">{material.type}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 capitalize">
+                      {material.subject || material.type}
+                    </p>
                   </div>
                 </div>
               </div>
 
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Uploaded on {new Date(material.uploadedAt).toLocaleDateString()}
+                {material.type === 'assignment' ? (
+                  <span className="text-red-500">Due: {new Date(material.dueDate).toLocaleDateString()}</span>
+                ) : (
+                  <span>Uploaded on {new Date(material.uploadedAt).toLocaleDateString()}</span>
+                )}
               </p>
 
               <div className="flex space-x-2">
-                <button className="flex-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 py-2 px-3 rounded-lg text-sm font-medium hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors">
+                <button 
+                  onClick={() => material.isQuiz ? navigate(`/student/quiz/${material._id}`) : null}
+                  className="flex-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 py-2 px-3 rounded-lg text-sm font-medium hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
+                >
                   <Eye size={14} className="inline mr-1" />
-                  View
+                  {material.isQuiz ? 'Start Quiz' : 'View'}
                 </button>
-                <button className="flex-1 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 py-2 px-3 rounded-lg text-sm font-medium hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors">
-                  <Download size={14} className="inline mr-1" />
-                  Download
-                </button>
+                {!material.isQuiz && (
+                  <button className="flex-1 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 py-2 px-3 rounded-lg text-sm font-medium hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors">
+                    <Download size={14} className="inline mr-1" />
+                    Download
+                  </button>
+                )}
               </div>
             </div>
-          ))
-        ) : (
+          ))}
+          
+        {materials.length === 0 && (
           <div className="col-span-full text-center py-12">
             <BookOpen size={48} className="mx-auto text-gray-400 mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No materials available</h3>
@@ -114,44 +133,7 @@ const Materials = () => {
         )}
       </div>
 
-      {/* Sample Materials for Demo */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[
-          { title: 'Mathematics Chapter 5', type: 'pdf', subject: 'Mathematics' },
-          { title: 'Physics Lab Video', type: 'video', subject: 'Physics' },
-          { title: 'Chemistry Notes', type: 'pdf', subject: 'Chemistry' },
-          { title: 'History Assignment', type: 'document', subject: 'History' },
-          { title: 'Biology Diagrams', type: 'image', subject: 'Biology' },
-          { title: 'English Literature', type: 'pdf', subject: 'English' }
-        ].map((material, index) => (
-          <div key={index} className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center space-x-3">
-                {getFileIcon(material.type)}
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 dark:text-white">{material.title}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{material.subject}</p>
-                </div>
-              </div>
-            </div>
 
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Uploaded on {new Date().toLocaleDateString()}
-            </p>
-
-            <div className="flex space-x-2">
-              <button className="flex-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 py-2 px-3 rounded-lg text-sm font-medium hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors">
-                <Eye size={14} className="inline mr-1" />
-                View
-              </button>
-              <button className="flex-1 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 py-2 px-3 rounded-lg text-sm font-medium hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors">
-                <Download size={14} className="inline mr-1" />
-                Download
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 };
