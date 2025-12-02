@@ -100,6 +100,10 @@ router.post('/quiz', [
 router.get('/quizzes', async (req, res) => {
   try {
     const quizzes = await Quiz.find({ createdBy: req.user.id })
+      .populate({
+        path: 'submissions.studentId',
+        select: 'fullName username email'
+      })
       .sort({ createdAt: -1 });
 
     res.json({
