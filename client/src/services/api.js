@@ -112,8 +112,10 @@ export const teacherAPI = {
 export const studentAPI = {
   getDashboard: () => api.get('/student/dashboard'),
   getMaterials: () => api.get('/student/materials'),
-  submitQuiz: (quizId, answers) => api.post(`/student/submit-quiz/${quizId}`, { answers }),
+  submitQuiz: (quizId, answers) => api.post(`/student/quiz/${quizId}/submit`, { answers }),
   getQuizzes: () => api.get('/student/quizzes'),
+  runCode: (code, language) => api.post('/student/run-code', { code, language }),
+  getGrades: () => api.get('/student/grades'),
   chatWithAI: (data) => {
     if (data instanceof FormData) {
       const config = {
