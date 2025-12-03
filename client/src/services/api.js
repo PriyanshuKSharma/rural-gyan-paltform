@@ -138,7 +138,6 @@ export const studentAPI = {
     };
     return api.post('/student/transcribe-audio', audioData, config);
   },
-  runCode: (code, language) => api.post('/student/code-run', { code, language }),
 };
 
 export default api;

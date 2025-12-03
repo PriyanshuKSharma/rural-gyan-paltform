@@ -126,7 +126,9 @@ const QuizManagement = () => {
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-600 dark:text-gray-400">Questions:</span>
-                <span className="font-medium text-gray-900 dark:text-white">{quiz.questions.length}</span>
+                <span className="font-medium text-gray-900 dark:text-white">
+                  {quiz.questions ? quiz.questions.length : (quiz.sections?.reduce((acc, sec) => acc + sec.questions.length, 0) || 0)}
+                </span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-600 dark:text-gray-400">Duration:</span>

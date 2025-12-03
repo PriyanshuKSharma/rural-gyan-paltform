@@ -67,19 +67,29 @@ router.get('/materials', async (req, res) => {
 
     // Get quizzes as assignments
     const quizzes = await Quiz.find({
-      classAssigned: student.standard,
-      isActive: true
-    }).select('title subject startTime endTime');
+      classAssigned: student.standard
+    }).select('title subject startTime endTime submissions totalMarks');
 
-    const quizAssignments = quizzes.map(quiz => ({
-      _id: quiz._id,
-      title: quiz.title,
-      subject: quiz.subject,
-      type: 'assignment',
-      uploadedAt: quiz.startTime,
-      dueDate: quiz.endTime,
-      isQuiz: true
-    }));
+    const quizAssignments = quizzes.map(quiz => {
+      const submission = quiz.submissions?.find(s => s.studentId.toString() === req.user.id);
+      const isExpired = new Date() > quiz.endTime;
+      let status = 'pending';
+      if (submission) status = 'submitted';
+      else if (isExpired) status = 'expired';
+
+      return {
+        _id: quiz._id,
+        title: quiz.title,
+        subject: quiz.subject,
+        type: 'assignment',
+        uploadedAt: quiz.startTime,
+        dueDate: quiz.endTime,
+        isQuiz: true,
+        status,
+        score: submission ? submission.score : null,
+        totalMarks: quiz.totalMarks
+      };
+    });
 
     const allMaterials = [...materials, ...quizAssignments];
 

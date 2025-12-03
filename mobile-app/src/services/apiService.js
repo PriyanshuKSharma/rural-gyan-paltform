@@ -1,7 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const BASE_URL = 'http://192.168.1.6:5000/api'; // Updated local IP address
+const BASE_URL = 'http://10.11.228.201:5000/api'; // Updated local IP address
 
 class ApiService {
   constructor() {

@@ -42,7 +42,9 @@ const Materials = () => {
     { id: 'all', label: 'All Materials' },
     { id: 'notes', label: 'Notes' },
     { id: 'videos', label: 'Videos' },
-    { id: 'assignments', label: 'Assignments' }
+    { id: 'assignments', label: 'Assignments' },
+    { id: 'quizzes', label: 'Quizzes' },
+    { id: 'history', label: 'History' }
   ];
 
   if (loading) {
@@ -79,13 +81,26 @@ const Materials = () => {
       {/* Materials Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {materials
-          .filter(material => activeTab === 'all' || 
-            (activeTab === 'assignments' && material.type === 'assignment') ||
-            (activeTab === 'notes' && material.type === 'pdf') ||
-            (activeTab === 'videos' && material.type === 'video')
-          )
+          .filter(material => {
+            if (activeTab === 'all') return material.status !== 'submitted' && material.status !== 'expired';
+            if (activeTab === 'assignments') return material.type === 'assignment' && material.status === 'pending';
+            if (activeTab === 'quizzes') return material.isQuiz;
+            if (activeTab === 'history') return material.status === 'submitted' || material.status === 'expired';
+            if (activeTab === 'notes') return material.type === 'pdf';
+            if (activeTab === 'videos') return material.type === 'video';
+            return true;
+          })
           .map((material, index) => (
-            <div key={index} className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow">
+            <div key={index} className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow relative overflow-hidden">
+              {material.status && material.status !== 'pending' && (
+                <div className={`absolute top-0 right-0 px-3 py-1 text-xs font-bold uppercase rounded-bl-xl ${
+                  material.status === 'submitted' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                  'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400'
+                }`}>
+                  {material.status}
+                </div>
+              )}
+              
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center space-x-3">
                   {getFileIcon(material.type === 'assignment' ? 'document' : material.type)}
@@ -98,27 +113,54 @@ const Materials = () => {
                 </div>
               </div>
 
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                {material.type === 'assignment' ? (
-                  <span className="text-red-500">Due: {new Date(material.dueDate).toLocaleDateString()}</span>
-                ) : (
-                  <span>Uploaded on {new Date(material.uploadedAt).toLocaleDateString()}</span>
+              <div className="mb-4 space-y-2">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {material.type === 'assignment' ? (
+                    <span className={material.status === 'expired' ? 'text-red-500' : ''}>
+                      Due: {new Date(material.dueDate).toLocaleDateString()}
+                    </span>
+                  ) : (
+                    <span>Uploaded on {new Date(material.uploadedAt).toLocaleDateString()}</span>
+                  )}
+                </p>
+                
+                {material.status === 'submitted' && (
+                  <div className="flex items-center justify-between text-sm bg-gray-50 dark:bg-gray-700/50 p-2 rounded-lg">
+                    <span className="text-gray-500 dark:text-gray-400">Score:</span>
+                    <span className="font-bold text-gray-900 dark:text-white">
+                      {material.score} / {material.totalMarks}
+                    </span>
+                  </div>
                 )}
-              </p>
+              </div>
 
               <div className="flex space-x-2">
-                <button 
-                  onClick={() => material.isQuiz ? navigate(`/student/quiz/${material._id}`) : null}
-                  className="flex-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 py-2 px-3 rounded-lg text-sm font-medium hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
-                >
-                  <Eye size={14} className="inline mr-1" />
-                  {material.isQuiz ? 'Start Quiz' : 'View'}
-                </button>
-                {!material.isQuiz && (
-                  <button className="flex-1 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 py-2 px-3 rounded-lg text-sm font-medium hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors">
-                    <Download size={14} className="inline mr-1" />
-                    Download
+                {material.isQuiz && material.status === 'pending' ? (
+                  <button 
+                    onClick={() => navigate(`/student/quiz/${material._id}`)}
+                    className="flex-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 py-2 px-3 rounded-lg text-sm font-medium hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
+                  >
+                    <Eye size={14} className="inline mr-1" />
+                    Start Quiz
                   </button>
+                ) : material.isQuiz ? (
+                   <button 
+                    disabled
+                    className="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-400 py-2 px-3 rounded-lg text-sm font-medium cursor-not-allowed"
+                  >
+                    {material.status === 'submitted' ? 'Completed' : 'Expired'}
+                  </button>
+                ) : (
+                  <>
+                    <button className="flex-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 py-2 px-3 rounded-lg text-sm font-medium hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors">
+                      <Eye size={14} className="inline mr-1" />
+                      View
+                    </button>
+                    <button className="flex-1 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 py-2 px-3 rounded-lg text-sm font-medium hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors">
+                      <Download size={14} className="inline mr-1" />
+                      Download
+                    </button>
+                  </>
                 )}
               </div>
             </div>

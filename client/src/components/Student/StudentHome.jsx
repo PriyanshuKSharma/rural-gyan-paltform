@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { BookOpen, Brain, Code, Video, Calendar, TrendingUp, Clock, Award } from 'lucide-react';
 import { studentAPI } from '../../services/api';
@@ -6,6 +7,7 @@ import LoadingSpinner from '../Common/LoadingSpinner';
 
 const StudentHome = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -149,14 +151,17 @@ const StudentHome = () => {
                 <div className="flex items-center space-x-3">
                   <div className="text-right">
                     <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      {quiz.questions.length} Questions
+                      {quiz.questions ? quiz.questions.length : (quiz.sections?.reduce((acc, sec) => acc + sec.questions.length, 0) || 0)} Questions
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
                       <Clock size={12} className="mr-1" />
                       {quiz.duration} min
                     </p>
                   </div>
-                  <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                  <button 
+                    onClick={() => navigate(`/student/quiz/${quiz._id}`)}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                  >
                     Take Quiz
                   </button>
                 </div>

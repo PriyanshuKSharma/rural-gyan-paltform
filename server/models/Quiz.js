@@ -14,7 +14,7 @@ const questionSchema = new mongoose.Schema({
   options: [{
     type: String
   }],
-  correctAnswer: {
+  correctAnswer: {  
     type: Number,
     min: 0,
     max: 3

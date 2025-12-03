@@ -56,7 +56,7 @@ router.post('/quiz', [
   body('title').notEmpty().trim(),
   body('classAssigned').notEmpty(),
   body('subject').notEmpty(),
-  body('questions').isArray({ min: 1 }),
+  body('sections').isArray({ min: 1 }),
   body('duration').isInt({ min: 1 }),
   body('startTime').isISO8601(),
   body('endTime').isISO8601()
@@ -67,9 +67,11 @@ router.post('/quiz', [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { title, description, classAssigned, subject, questions, duration, startTime, endTime } = req.body;
+    const { title, description, classAssigned, subject, sections, duration, startTime, endTime } = req.body;
 
-    const totalMarks = questions.reduce((sum, q) => sum + (q.marks || 1), 0);
+    const totalMarks = sections.reduce((secSum, section) => {
+      return secSum + section.questions.reduce((qSum, q) => qSum + (q.marks || 1), 0);
+    }, 0);
 
     const quiz = new Quiz({
       title,
@@ -77,7 +79,7 @@ router.post('/quiz', [
       createdBy: req.user.id,
       classAssigned,
       subject,
-      questions,
+      sections,
       totalMarks,
       duration,
       startTime: new Date(startTime),
@@ -124,8 +126,11 @@ router.put('/quiz/:id', async (req, res) => {
     }
 
     Object.assign(quiz, req.body);
-    if (req.body.questions) {
-      quiz.totalMarks = req.body.questions.reduce((sum, q) => sum + (q.marks || 1), 0);
+    
+    if (req.body.sections) {
+      quiz.totalMarks = req.body.sections.reduce((secSum, section) => {
+        return secSum + section.questions.reduce((qSum, q) => qSum + (q.marks || 1), 0);
+      }, 0);
     }
 
     await quiz.save();
