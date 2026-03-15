@@ -15,7 +15,8 @@ import {
   Settings, 
   LogOut,
   Menu,
-  X
+  X,
+  Calendar
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -48,12 +49,14 @@ const Sidebar = ({ isOpen, setIsOpen, userRole }) => {
           { path: '/teacher/subjects', icon: BookOpen, label: t('allocatedSubjects') },
           { path: '/teacher/materials', icon: FileText, label: 'Materials' },
           { path: '/teacher/students', icon: Users, label: t('classManagement') },
+          { path: '/teacher/timetable', icon: Calendar, label: 'Timetable' },
           { path: '/teacher/performance', icon: BarChart3, label: t('performanceAnalysis') },
         ];
       case 'student':
         return [
           { path: '/student', icon: Home, label: t('dashboard') },
           { path: '/student/class', icon: Video, label: t('virtualClass') },
+          { path: '/student/timetable', icon: Calendar, label: 'Timetable' },
           { path: '/student/materials', icon: BookOpen, label: t('materials') },
           { path: '/student/ai-tutor', icon: Brain, label: t('aiTutor') },
           { path: '/student/code-editor', icon: Code, label: t('virtualCodeEditor') },

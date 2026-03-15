@@ -1,15 +1,76 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Users, Clock, Calendar, X, FileText, Video, ClipboardList } from 'lucide-react';
+import { BookOpen, Users, Clock, X, FileText, Video, ClipboardList, Loader2, AlertCircle } from 'lucide-react';
+import { teacherAPI } from '../../services/api';
 
 const AllocatedSubjects = () => {
   const navigate = useNavigate();
   const [selectedSubject, setSelectedSubject] = useState(null);
-  const subjects = [
-    { name: 'Mathematics', classes: ['10A', '10B'], students: 45, schedule: 'Mon, Wed, Fri - 9:00 AM' },
-    { name: 'Physics', classes: ['11A'], students: 25, schedule: 'Tue, Thu - 10:00 AM' },
-    { name: 'Chemistry', classes: ['11B', '12A'], students: 38, schedule: 'Mon, Wed - 2:00 PM' }
-  ];
+  const [subjects, setSubjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchSubjects();
+  }, []);
+
+  const fetchSubjects = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await teacherAPI.getClasses();
+      
+      if (response.data.success) {
+        const classrooms = response.data.data.classrooms || [];
+        // Group by subject to combine multiple classes
+        const subjectMap = {};
+        
+        classrooms.forEach(classroom => {
+          const subjectName = classroom.subject || 'General';
+          if (!subjectMap[subjectName]) {
+            subjectMap[subjectName] = {
+              name: subjectName,
+              classes: [],
+              students: 0,
+              schedule: 'Not scheduled'
+            };
+          }
+          subjectMap[subjectName].classes.push(classroom.className);
+          subjectMap[subjectName].students += classroom.students?.length || 0;
+        });
+        
+        setSubjects(Object.values(subjectMap));
+      }
+    } catch (err) {
+      console.error('Error fetching subjects:', err);
+      setError('Failed to load subjects');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="animate-spin text-cyan-500" size={48} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 space-y-4">
+        <AlertCircle className="text-red-500" size={48} />
+        <p className="text-gray-600 dark:text-gray-400">{error}</p>
+        <button
+          onClick={fetchSubjects}
+          className="px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -19,51 +80,59 @@ const AllocatedSubjects = () => {
         <p className="text-gray-600 dark:text-gray-400">Manage your assigned subjects and classes</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {subjects.map((subject, index) => (
-          <div key={index} className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
-                <BookOpen className="text-white" size={24} />
+      {subjects.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {subjects.map((subject, index) => (
+            <div key={index} className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
+                  <BookOpen className="text-white" size={24} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{subject.name}</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Subject</p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{subject.name}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Subject</p>
-              </div>
-            </div>
 
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Classes:</span>
-                <span className="text-sm font-medium text-gray-900 dark:text-white">
-                  {subject.classes.join(', ')}
-                </span>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Classes:</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    {subject.classes.join(', ')}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
+                    <Users size={14} className="mr-1" />
+                    Students:
+                  </span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">{subject.students}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
+                    <Clock size={14} className="mr-1" />
+                    Schedule:
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{subject.schedule}</p>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
-                  <Users size={14} className="mr-1" />
-                  Students:
-                </span>
-                <span className="text-sm font-medium text-gray-900 dark:text-white">{subject.students}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
-                  <Clock size={14} className="mr-1" />
-                  Schedule:
-                </span>
-              </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{subject.schedule}</p>
-            </div>
 
-            <button 
-              onClick={() => setSelectedSubject(subject)}
-              className="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Manage Subject
-            </button>
-          </div>
-        ))}
-      </div>
+              <button 
+                onClick={() => setSelectedSubject(subject)}
+                className="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Manage Subject
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-2xl">
+          <BookOpen size={48} className="mx-auto text-gray-400 mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No subjects allocated</h3>
+          <p className="text-gray-600 dark:text-gray-400">Contact admin to get subjects assigned</p>
+        </div>
+      )}
     </div>
 
     {/* Subject Management Modal */}
@@ -158,20 +227,6 @@ const AllocatedSubjects = () => {
                 <div className="text-left">
                   <div className="font-semibold text-gray-900 dark:text-white">Start Virtual Class</div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">Begin live session for this subject</div>
-                </div>
-              </button>
-
-              <button
-                onClick={() => {
-                  setSelectedSubject(null);
-                  navigate('/teacher/performance', { state: { subject: selectedSubject.name } });
-                }}
-                className="w-full flex items-center gap-3 p-4 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl hover:border-blue-500 dark:hover:border-blue-500 transition-colors"
-              >
-                <FileText className="text-orange-600" size={24} />
-                <div className="text-left">
-                  <div className="font-semibold text-gray-900 dark:text-white">View Performance</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Analyze student performance data</div>
                 </div>
               </button>
             </div>

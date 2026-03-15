@@ -27,16 +27,13 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="flex h-screen cyber-bg overflow-hidden font-mono">
-      {/* Background Overlay Effects */}
-      <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1535868463750-c78d9543614f?q=80&w=2076&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-overlay pointer-events-none"></div>
-      <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-gray-900/90 to-gray-900 pointer-events-none"></div>
-      
-      {/* Scanline Effect */}
-      <div className="absolute inset-0 pointer-events-none z-50 opacity-5" style={{
-        background: 'linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.5) 51%)',
-        backgroundSize: '100% 4px'
-      }}></div>
+    <div className="flex h-screen bg-[#0a0f1c] text-slate-200 overflow-hidden font-sans selection:bg-indigo-500/30 relative">
+      {/* Dynamic Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-indigo-600/10 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-purple-600/10 blur-[120px]" />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+      </div>
 
       <Sidebar 
         isOpen={sidebarOpen} 
@@ -50,7 +47,7 @@ const AdminDashboard = () => {
           title={getPageTitle(window.location.pathname)}
         />
         
-        <main className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-cyan-900 scrollbar-track-gray-900">
+        <main className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-indigo-500/50 scrollbar-track-slate-900/50 relative z-10">
           <div className="max-w-7xl mx-auto">
             <Routes>
               <Route index element={<AdminHome />} />

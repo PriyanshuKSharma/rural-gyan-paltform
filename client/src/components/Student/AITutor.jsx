@@ -223,12 +223,16 @@ const AITutor = () => {
 
   return (
     <div className={`h-full flex flex-col rounded-2xl border relative transition-all duration-300 ${isFullscreen ? 'fixed inset-4 z-50 shadow-2xl' : ''
-      } ${theme === 'gradient'
-        ? 'bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 border-blue-200 dark:border-purple-700'
-        : 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700'
-      }`}>
+      } bg-[#0a0f1c] text-slate-200 border-indigo-500/20 overflow-hidden font-sans`}>
+      {/* Background Decor */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-indigo-600/10 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-purple-600/10 blur-[120px]" />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+      </div>
+      
       {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-blue-200 dark:border-purple-700 bg-gradient-to-r from-blue-500/5 to-purple-500/5 dark:from-blue-500/10 dark:to-purple-500/10">
+      <div className="flex items-center justify-between p-6 border-b border-indigo-500/20 bg-slate-900/60 backdrop-blur-md relative z-10">
         <div className="flex items-center space-x-4">
           <div className="relative">
             <div className="w-12 h-12 bg-gradient-to-r from-purple-500 via-blue-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg animate-pulse">
@@ -250,26 +254,26 @@ const AITutor = () => {
           </div>
         </div>
         <div className="flex items-center space-x-3">
-          <div className="flex items-center space-x-2 px-3 py-1 bg-green-100 dark:bg-green-900/30 rounded-full">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-xs font-medium text-green-700 dark:text-green-400">Online</span>
+          <div className="flex items-center space-x-2 px-3 py-1 bg-green-500/10 border border-green-500/30 rounded-full">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.6)]"></div>
+            <span className="text-xs font-medium text-green-400">Online</span>
           </div>
           <button
             onClick={(e) => {
               e.stopPropagation();
               setTheme(theme === 'gradient' ? 'minimal' : 'gradient');
             }}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="p-2 rounded-lg hover:bg-slate-800 transition-colors text-slate-400 hover:text-white"
             title="Toggle theme"
           >
-            <Settings className="text-gray-500 dark:text-gray-400" size={16} />
+            <Settings size={16} />
           </button>
           <button
             onClick={(e) => {
               e.stopPropagation();
               setIsFullscreen(!isFullscreen);
             }}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="p-2 rounded-lg hover:bg-slate-800 transition-colors text-slate-400 hover:text-white"
             title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
           >
             {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
@@ -280,7 +284,7 @@ const AITutor = () => {
       {/* Messages */}
       <div
         ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar scroll-smooth"
+        className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar scroll-smooth relative z-10"
         onScroll={handleScroll}
         role="log"
         aria-live="polite"
@@ -307,8 +311,8 @@ const AITutor = () => {
           >
             <div className={`flex items-start space-x-3 max-w-4xl ${message.type === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg transition-transform hover:scale-110 ${message.type === 'user'
-                  ? 'bg-gradient-to-r from-blue-500 to-blue-600'
-                  : 'bg-gradient-to-r from-purple-500 via-blue-500 to-pink-500 animate-gradient-x'
+                  ? 'bg-gradient-to-r from-indigo-500 to-purple-600 shadow-indigo-500/30'
+                  : 'bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 animate-gradient-x shadow-purple-500/30'
                 }`}>
                 {message.type === 'user' ? (
                   <User className="text-white" size={18} />
@@ -316,11 +320,11 @@ const AITutor = () => {
                   <Brain className="text-white" size={18} />
                 )}
               </div>
-              <div className={`rounded-2xl p-5 group relative shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl ${message.type === 'user'
-                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
-                  : 'bg-white/80 dark:bg-gray-800/80 text-gray-900 dark:text-white border border-gray-200/50 dark:border-gray-700/50'
+              <div className={`rounded-2xl p-5 group relative shadow-lg backdrop-blur-md transition-all duration-300 hover:shadow-xl ${message.type === 'user'
+                  ? 'bg-indigo-600/90 text-white border border-indigo-500/50 rounded-tr-sm'
+                  : 'bg-slate-800/80 text-slate-200 border border-slate-700/50 rounded-tl-sm'
                 }`}>
-                <div className="text-sm leading-relaxed prose prose-sm max-w-none dark:prose-invert">
+                <div className="text-sm leading-relaxed prose prose-sm max-w-none prose-invert">
                   <div dangerouslySetInnerHTML={{
                     __html: message.content
                       .replace(/### (.*?)\n/g, '<h5 class="text-base font-semibold mb-2 mt-3 text-gray-800 dark:text-gray-200">$1</h5>')
@@ -350,8 +354,7 @@ const AITutor = () => {
                 )}
 
                 <div className="flex items-center justify-between mt-2">
-                  <p className={`text-xs ${message.type === 'user' ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'
-                    }`}>
+                  <p className={`text-xs ${message.type === 'user' ? 'text-indigo-200' : 'text-slate-500'}`}>
                     {new Date(message.timestamp).toLocaleTimeString()}
                   </p>
 
@@ -359,8 +362,8 @@ const AITutor = () => {
                     <button
                       onClick={() => copyMessage(message.content)}
                       className={`p-2 rounded-lg transition-all duration-200 hover:scale-110 ${message.type === 'user'
-                          ? 'text-blue-100 hover:text-white hover:bg-white/20'
-                          : 'text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30'
+                          ? 'text-indigo-200 hover:text-white hover:bg-white/20'
+                          : 'text-slate-500 hover:text-indigo-400 hover:bg-indigo-500/20'
                         }`}
                       title="Copy message"
                       aria-label="Copy message"
@@ -397,26 +400,26 @@ const AITutor = () => {
         ))}
 
         {(isLoading || isTyping) && (
-          <div className="flex justify-start animate-fade-in">
+          <div className="flex justify-start animate-fade-in relative z-10">
             <div className="flex items-start space-x-3 max-w-4xl">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 via-blue-500 to-pink-500 flex items-center justify-center shadow-lg animate-pulse">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 flex items-center justify-center shadow-lg animate-pulse">
                 <Brain className="text-white" size={18} />
               </div>
-              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-5 shadow-lg border border-gray-200/50 dark:border-gray-700/50">
+              <div className="bg-slate-800/80 backdrop-blur-md rounded-2xl p-5 shadow-lg border border-slate-700/50">
                 {isTyping ? (
                   <div className="flex items-center space-x-2">
                     <div className="flex space-x-1">
                       <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                     </div>
-                    <span className="text-sm text-gray-500 dark:text-gray-400 animate-pulse">AI is thinking...</span>
+                    <span className="text-sm text-slate-400 animate-pulse">AI is thinking...</span>
                   </div>
                 ) : (
                   <div className="flex space-x-1">
-                    <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full animate-bounce"></div>
-                    <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-pink-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-3 h-3 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full animate-bounce"></div>
+                    <div className="w-3 h-3 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                   </div>
                 )}
               </div>
@@ -430,7 +433,7 @@ const AITutor = () => {
       {showScrollButton && (
         <button
           onClick={scrollToBottom}
-          className="absolute bottom-32 right-8 p-3 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors z-10"
+          className="absolute bottom-32 right-8 p-3 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-500 transition-colors z-20"
           aria-label="Scroll to bottom"
         >
           <ChevronDown size={20} />
@@ -439,14 +442,14 @@ const AITutor = () => {
 
       {/* Quick Questions */}
       {messages.length === 1 && (
-        <div className="px-6 pb-4">
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Quick questions to get started:</p>
+        <div className="px-6 pb-4 relative z-10">
+          <p className="text-sm text-slate-400 mb-3 font-medium">Quick questions to get started:</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {quickQuestions.map((question, index) => (
               <button
                 key={index}
                 onClick={() => setInputMessage(question)}
-                className="text-left p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="text-left p-3 flex items-center gap-2 bg-slate-800/60 rounded-xl hover:bg-slate-700/60 border border-slate-700/50 transition-all duration-300 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 hover:shadow-lg hover:-translate-y-0.5"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
@@ -457,6 +460,7 @@ const AITutor = () => {
                 role="button"
                 aria-label={`Quick question: ${question}`}
               >
+                <Sparkles size={14} className="text-indigo-400" />
                 {question}
               </button>
             ))}
@@ -465,24 +469,24 @@ const AITutor = () => {
       )}
 
       {/* Input */}
-      <div className="p-6 border-t border-blue-200 dark:border-purple-700 bg-gradient-to-r from-blue-500/5 to-purple-500/5 dark:from-blue-500/10 dark:to-purple-500/10">
+      <div className="p-6 border-t border-indigo-500/20 bg-slate-900/60 backdrop-blur-md relative z-10">
         {uploadedFiles.length > 0 && (
           <div className="mb-4 flex flex-wrap gap-3">
             {uploadedFiles.map((file, index) => (
-              <div key={index} className="flex items-center space-x-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-3 shadow-lg border border-gray-200/50 dark:border-gray-700/50 animate-fade-in hover:shadow-xl transition-all duration-300">
+              <div key={index} className="flex items-center space-x-3 bg-slate-800/80 backdrop-blur-sm rounded-xl p-3 shadow-lg border border-slate-700/50 animate-fade-in hover:shadow-xl transition-all duration-300">
                 <div className={`p-2 rounded-lg ${file.type.startsWith('image/')
-                    ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
-                    : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                    ? 'bg-green-500/10 text-green-400'
+                    : 'bg-indigo-500/10 text-indigo-400'
                   }`}>
                   {file.type.startsWith('image/') ? <Image size={16} /> : <FileText size={16} />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate block max-w-32">{file.name}</span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">{(file.size / 1024).toFixed(1)} KB</span>
+                  <span className="text-sm font-medium text-slate-300 truncate block max-w-32">{file.name}</span>
+                  <span className="text-xs text-slate-500">{(file.size / 1024).toFixed(1)} KB</span>
                 </div>
                 <button
                   onClick={() => removeFile(index)}
-                  className="p-1 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 transition-all duration-200 hover:scale-110"
+                  className="p-1 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all duration-200 hover:scale-110"
                   aria-label={`Remove ${file.name}`}
                 >
                   <X size={16} />
@@ -498,9 +502,9 @@ const AITutor = () => {
               <button
                 type="button"
                 onClick={isRecording ? stopRecording : startRecording}
-                className={`p-3 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-lg hover:shadow-xl hover:scale-110 ${isRecording
-                    ? 'bg-red-500 text-white focus:ring-red-500 animate-pulse shadow-red-200 dark:shadow-red-900/50'
-                    : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 focus:ring-purple-500 border border-gray-200 dark:border-gray-700'
+                className={`p-3 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-lg hover:shadow-[0_0_15px_rgba(99,102,241,0.3)] hover:-translate-y-0.5 ${isRecording
+                    ? 'bg-rose-500 text-white focus:ring-rose-500 animate-pulse shadow-[0_0_20px_rgba(244,63,94,0.4)]'
+                    : 'bg-slate-800 text-slate-300 hover:text-indigo-400 focus:ring-indigo-500 border border-slate-700 hover:border-indigo-500/50'
                   }`}
                 title={isRecording ? 'Stop recording' : 'Voice input'}
                 aria-label={isRecording ? 'Stop recording' : 'Start voice recording'}
@@ -510,7 +514,7 @@ const AITutor = () => {
               <button
                 type="button"
                 onClick={() => imageInputRef.current?.click()}
-                className="p-3 rounded-xl bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 shadow-lg hover:shadow-xl hover:scale-110 border border-gray-200 dark:border-gray-700"
+                className="p-3 rounded-xl bg-slate-800 text-slate-300 hover:text-green-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-lg hover:shadow-[0_0_15px_rgba(34,197,94,0.2)] hover:-translate-y-0.5 border border-slate-700 hover:border-green-500/50"
                 title="Upload image"
                 aria-label="Upload image"
               >
@@ -519,7 +523,7 @@ const AITutor = () => {
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="p-3 rounded-xl bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-lg hover:shadow-xl hover:scale-110 border border-gray-200 dark:border-gray-700"
+                className="p-3 rounded-xl bg-slate-800 text-slate-300 hover:text-indigo-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-lg hover:shadow-[0_0_15px_rgba(99,102,241,0.3)] hover:-translate-y-0.5 border border-slate-700 hover:border-indigo-500/50"
                 title="Upload document"
                 aria-label="Upload document"
               >
@@ -531,7 +535,7 @@ const AITutor = () => {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="Ask me anything... I'm here to help you learn! 🎓"
-                className="w-full p-4 pr-12 border-2 border-gray-200 dark:border-gray-600 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-900 dark:text-white resize-none shadow-lg transition-all duration-300 hover:shadow-xl"
+                className="w-full p-4 pr-12 border border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500/50 bg-slate-800/80 backdrop-blur-md text-white resize-none shadow-lg transition-all duration-300"
                 rows="3"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
@@ -542,7 +546,7 @@ const AITutor = () => {
                 aria-label="Type your message"
               />
               {inputMessage && (
-                <div className="absolute bottom-3 right-3 text-xs text-gray-400 dark:text-gray-500">
+                <div className="absolute bottom-3 right-3 text-xs text-slate-500">
                   {inputMessage.length}/1000
                 </div>
               )}
@@ -551,10 +555,10 @@ const AITutor = () => {
           <button
             type="submit"
             disabled={(!inputMessage.trim() && uploadedFiles.length === 0) || isLoading}
-            className="p-4 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-2xl hover:from-purple-600 hover:to-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 shadow-lg hover:shadow-xl hover:scale-110 disabled:hover:scale-100"
+            className="p-4 bg-indigo-600 text-white rounded-2xl hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-[0_0_20px_rgba(99,102,241,0.4)] disabled:shadow-none hover:-translate-y-0.5"
             aria-label="Send message"
           >
-            <Send size={24} className={isLoading ? 'animate-pulse' : ''} />
+            <Send size={24} className={isLoading ? 'animate-pulse text-indigo-200' : ''} />
           </button>
         </form>
 
@@ -578,12 +582,12 @@ const AITutor = () => {
         />
 
         <div className="flex items-center justify-between mt-3">
-          <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center space-x-2">
+          <p className="text-xs text-slate-500 flex items-center space-x-2">
             <span>Press Enter to send, Shift+Enter for new line</span>
           </p>
-          <div className="flex items-center space-x-2 text-xs text-gray-400 dark:text-gray-500">
-            <div className="flex items-center space-x-1">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          <div className="flex items-center space-x-2 text-xs text-slate-500">
+            <div className="flex items-center space-x-1 border border-indigo-500/20 px-2 py-1 rounded bg-indigo-500/5">
+              <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(99,102,241,0.6)]"></div>
               <span>Powered by AI</span>
             </div>
           </div>

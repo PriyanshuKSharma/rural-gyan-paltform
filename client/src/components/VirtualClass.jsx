@@ -27,7 +27,7 @@ const VideoCard = ({ peer, isLocal, stream, userName }) => {
   }, [peer, stream]);
 
   return (
-    <div className="relative bg-gray-900 rounded-lg overflow-hidden border border-cyan-900/30 shadow-lg group aspect-video">
+    <div className="relative bg-slate-900/60 rounded-2xl overflow-hidden border border-slate-700/50 shadow-2xl group aspect-video">
       <video
         playsInline
         autoPlay
@@ -35,13 +35,13 @@ const VideoCard = ({ peer, isLocal, stream, userName }) => {
         ref={videoRef}
         className="w-full h-full object-cover"
       />
-      <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-full border border-cyan-500/30">
-        <span className="text-white text-sm font-medium flex items-center gap-2">
-          {isLocal ? 'YOU' : userName}
-          {isLocal && <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"/>}
+      <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-indigo-500/30">
+        <span className="text-white text-sm font-semibold flex items-center gap-2 tracking-wide">
+          {isLocal ? 'You' : userName}
+          {isLocal && <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.6)]"/>}
         </span>
       </div>
-      <div className="absolute inset-0 border-2 border-cyan-500/0 group-hover:border-cyan-500/50 transition-all duration-300 pointer-events-none rounded-lg" />
+      <div className="absolute inset-0 border-2 border-indigo-500/0 group-hover:border-indigo-500/50 transition-all duration-500 pointer-events-none rounded-2xl" />
     </div>
   );
 };
@@ -644,28 +644,41 @@ const VirtualClass = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-900 overflow-hidden cyber-bg">
+    <div className="flex h-screen bg-[#0a0f1c] text-slate-200 overflow-hidden font-sans selection:bg-indigo-500/30 relative">
+      {/* Dynamic Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-indigo-600/10 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-purple-600/10 blur-[120px]" />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+      </div>
+
       {/* Main Video Area */}
-      <div className="flex-1 flex flex-col relative">
+      <div className="flex-1 flex flex-col relative z-10">
         {/* Header */}
-        <div className="absolute top-0 left-0 right-0 z-10 p-4 bg-gradient-to-b from-black/80 to-transparent">
+        <div className="absolute top-0 left-0 right-0 z-10 p-6 bg-gradient-to-b from-[#0a0f1c]/90 to-transparent">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-xl font-bold text-cyan-400 cyber-glitch-text" data-text={classData?.title || "VIRTUAL_CLASSROOM"}>
-                {classData?.title || "VIRTUAL_CLASSROOM"}
+              <h1 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">
+                {classData?.title || "Virtual Classroom"}
               </h1>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-xs text-cyan-600 font-mono">SECURE_CONNECTION_ESTABLISHED</span>
-                <span className="text-xs text-gray-500 font-mono">|</span>
-                <div className="flex items-center gap-1 text-xs text-purple-400 font-mono">
-                  <Clock size={12} />
+              <div className="flex items-center gap-3 mt-1">
+                <span className="text-xs text-indigo-400 font-medium px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">Secure Connection</span>
+                <span className="text-slate-600">•</span>
+                <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+                  <Clock size={14} className="text-purple-400" />
                   {timer}
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-1 bg-red-500/20 border border-red-500/50 text-red-400 text-xs rounded animate-pulse">LIVE</span>
-              <span className="px-2 py-1 bg-cyan-500/20 border border-cyan-500/50 text-cyan-400 text-xs rounded">{peers.length + 1} ONLINE</span>
+            <div className="flex items-center gap-3">
+              <span className="px-3 py-1 bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-bold tracking-wider rounded-full shadow-[0_0_15px_rgba(244,63,94,0.2)] flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                LIVE
+              </span>
+              <span className="px-3 py-1 bg-slate-800/80 backdrop-blur-md border border-slate-700 text-slate-300 text-xs font-bold tracking-wider rounded-full flex items-center gap-2">
+                <Users size={14} className="text-indigo-400" />
+                {peers.length + 1} ONLINE
+              </span>
             </div>
           </div>
         </div>
@@ -678,7 +691,7 @@ const VirtualClass = () => {
               {/* Teacher's large video */}
               {peers.find(p => p.userType === 'teacher') ? (
                 <div className="flex-1 relative">
-                  <div className="relative bg-gray-900 rounded-lg overflow-hidden border-2 border-cyan-500/50 shadow-[0_0_30px_rgba(6,182,212,0.3)] h-full w-full">
+                  <div className="relative bg-black rounded-[2rem] overflow-hidden border border-slate-700/50 shadow-2xl h-full w-full">
                     <video
                       playsInline
                       autoPlay
@@ -747,7 +760,7 @@ const VirtualClass = () => {
         </div>
 
         {/* Controls Bar */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 h-16 bg-gray-900/90 backdrop-blur-md border border-cyan-900/50 rounded-full flex items-center justify-center gap-2 px-6 z-20 shadow-[0_0_20px_rgba(6,182,212,0.2)]">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 h-16 bg-slate-900/80 backdrop-blur-xl border border-slate-700 rounded-full flex items-center justify-center gap-2 px-6 z-20 shadow-2xl">
           <button 
             onClick={toggleAudio}
             className={`p-3 rounded-full transition-all duration-300 ${isAudioEnabled ? 'bg-gray-800 hover:bg-gray-700 text-white' : 'bg-red-500/20 border border-red-500 text-red-500'}`}
@@ -784,16 +797,16 @@ const VirtualClass = () => {
           
           <button 
             onClick={() => setShowChat(!showChat)}
-            className={`p-3 rounded-full transition-all duration-300 ${showChat ? 'bg-cyan-500 text-white shadow-[0_0_15px_rgba(6,182,212,0.5)]' : 'bg-gray-800 hover:bg-gray-700 text-white'}`}
+            className={`p-3 rounded-full transition-all duration-300 ${showChat ? 'bg-indigo-600 text-white shadow-[0_0_15px_rgba(79,70,229,0.5)]' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'}`}
             title="Chat"
           >
             <MessageSquare size={20} />
-            {newMessage && !showChat && <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full animate-bounce" />}
+            {newMessage && !showChat && <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full animate-bounce shadow-[0_0_10px_rgba(244,63,94,0.6)]" />}
           </button>
           
           <button 
             onClick={() => setShowParticipants(!showParticipants)}
-            className={`p-3 rounded-full transition-all duration-300 ${showParticipants ? 'bg-purple-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.5)]' : 'bg-gray-800 hover:bg-gray-700 text-white'}`}
+            className={`p-3 rounded-full transition-all duration-300 ${showParticipants ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.5)]' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'}`}
             title="Participants"
           >
             <Users size={20} />
@@ -801,7 +814,7 @@ const VirtualClass = () => {
 
           <button 
             onClick={() => setShowWhiteboard(!showWhiteboard)}
-            className={`p-3 rounded-full transition-all duration-300 ${showWhiteboard ? 'bg-yellow-500 text-white shadow-[0_0_15px_rgba(234,179,8,0.5)]' : 'bg-gray-800 hover:bg-gray-700 text-white'}`}
+            className={`p-3 rounded-full transition-all duration-300 ${showWhiteboard ? 'bg-amber-500 text-white shadow-[0_0_15px_rgba(245,158,11,0.5)]' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'}`}
             title="Whiteboard"
           >
             <Presentation size={20} />
@@ -810,7 +823,7 @@ const VirtualClass = () => {
           {user.role === 'student' && (
             <button 
               onClick={toggleRaiseHand}
-              className={`p-3 rounded-full transition-all duration-300 ${isHandRaised ? 'bg-orange-500 text-white shadow-[0_0_15px_rgba(249,115,22,0.5)] animate-bounce' : 'bg-gray-800 hover:bg-gray-700 text-white'}`}
+              className={`p-3 rounded-full transition-all duration-300 ${isHandRaised ? 'bg-orange-500 text-white shadow-[0_0_15px_rgba(249,115,22,0.5)] animate-bounce' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'}`}
               title={isHandRaised ? "Lower Hand" : "Raise Hand"}
             >
               <Hand size={20} />
@@ -824,13 +837,13 @@ const VirtualClass = () => {
               title="Lower All Hands"
             >
               <Hand size={20} />
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+              <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
                 {raisedHands.length}
               </span>
             </button>
           )}
 
-          <div className="w-px h-8 bg-gray-700 mx-2" />
+          <div className="w-px h-8 bg-slate-700 mx-2" />
           
           <button 
             onClick={leaveClass}
@@ -844,16 +857,17 @@ const VirtualClass = () => {
 
       {/* Sidebar (Chat/Participants) */}
       {(showChat || showParticipants) && (
-        <div className="w-80 bg-gray-900 border-l border-cyan-900/30 flex flex-col transition-all duration-300 z-30">
-          <div className="p-4 border-b border-cyan-900/30 flex justify-between items-center bg-gray-800/50">
-            <h2 className="font-bold text-cyan-400 tracking-wider text-sm">
-              {showChat ? 'SECURE_CHAT' : 'PARTICIPANTS'}
+        <div className="w-80 bg-slate-900/90 backdrop-blur-xl border-l border-slate-700 flex flex-col transition-all duration-300 z-30 shadow-2xl relative">
+          <div className="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-800/30">
+            <h2 className="font-bold text-slate-200 tracking-wide text-sm flex items-center gap-2">
+              {showChat ? <MessageSquare size={16} className="text-indigo-400" /> : <Users size={16} className="text-purple-400" />}
+              {showChat ? 'Class Chat' : 'Participants'}
             </h2>
             <button 
               onClick={() => { setShowChat(false); setShowParticipants(false); }}
-              className="text-gray-400 hover:text-white"
+              className="text-slate-500 hover:text-slate-300 bg-slate-800 hover:bg-slate-700 p-1 rounded-md transition-colors"
             >
-              <X size={18} />
+              <X size={16} />
             </button>
           </div>
 
@@ -866,17 +880,17 @@ const VirtualClass = () => {
                   return (
                   <div key={idx} className={`flex flex-col ${isMyMessage ? 'items-end' : 'items-start'}`}>
                     <div className="flex items-baseline gap-2 mb-1">
-                      <span className={`text-[10px] font-bold ${isMyMessage ? 'text-cyan-400' : 'text-purple-400'}`}>
-                        {isMyMessage ? 'YOU' : msg.userName?.toUpperCase()}
+                      <span className={`text-xs font-semibold ${isMyMessage ? 'text-indigo-400' : 'text-purple-400'}`}>
+                        {isMyMessage ? 'You' : msg.userName}
                       </span>
-                      <span className="text-[10px] text-gray-500">
+                      <span className="text-[10px] text-slate-500">
                         {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
-                    <div className={`px-3 py-2 rounded-lg max-w-[90%] text-sm ${
+                    <div className={`px-4 py-2.5 max-w-[90%] text-sm shadow-sm ${
                       isMyMessage 
-                        ? 'bg-cyan-900/30 border border-cyan-500/30 text-cyan-100 rounded-tr-none' 
-                        : 'bg-gray-800 border border-gray-700 text-gray-200 rounded-tl-none'
+                        ? 'bg-indigo-600 text-white rounded-2xl rounded-tr-sm' 
+                        : 'bg-slate-800 text-slate-200 rounded-2xl rounded-tl-sm border border-slate-700'
                     }`}>
                       {msg.message}
                     </div>
@@ -885,20 +899,20 @@ const VirtualClass = () => {
                 })}
                 <div ref={messagesEndRef} />
               </div>
-              <form onSubmit={sendMessage} className="p-4 border-t border-cyan-900/30 bg-gray-800/30">
+              <form onSubmit={sendMessage} className="p-4 border-t border-slate-700 bg-slate-900">
                 <div className="relative">
                   <input
                     type="text"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Enter message..."
-                    className="w-full bg-gray-900 border border-cyan-900/50 rounded-lg pl-4 pr-10 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                    placeholder="Type a message..."
+                    className="w-full bg-slate-800 border border-slate-600 rounded-xl pl-4 pr-12 py-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-inner"
                   />
                   <button 
                     type="submit"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-cyan-500 hover:text-cyan-400"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg flex items-center justify-center transition-colors"
                   >
-                    <Send size={16} />
+                    <Send size={14} />
                   </button>
                 </div>
               </form>
@@ -980,18 +994,23 @@ const VirtualClass = () => {
 
       {/* Whiteboard Modal */}
       {showWhiteboard && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-          <div className="w-full h-full max-w-7xl max-h-[90vh] bg-gray-900 rounded-lg overflow-hidden border-2 border-cyan-500/50 shadow-[0_0_50px_rgba(6,182,212,0.3)]">
-            <div className="flex justify-between items-center p-3 bg-gray-800 border-b border-cyan-900/30">
-              <h2 className="text-cyan-400 font-bold tracking-wider">VIRTUAL WHITEBOARD</h2>
+        <div className="fixed inset-0 bg-[#0a0f1c]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="w-full h-full max-w-7xl max-h-[90vh] bg-slate-900 rounded-2xl overflow-hidden border border-slate-700 shadow-2xl flex flex-col relative">
+            <div className="flex justify-between items-center p-4 bg-slate-800/80 border-b border-slate-700 backdrop-blur-md z-10">
+              <h2 className="text-indigo-400 font-bold tracking-wide flex items-center gap-2">
+                <Presentation size={18} />
+                Virtual Whiteboard
+              </h2>
               <button
                 onClick={() => setShowWhiteboard(false)}
-                className="text-gray-400 hover:text-white p-2 rounded hover:bg-gray-700"
+                className="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700 transition-colors"
               >
                 <X size={20} />
               </button>
             </div>
-            <Whiteboard socket={socketRef.current} classId={classId} isTeacher={user.role === 'teacher'} />
+            <div className="flex-1 bg-white relative">
+              <Whiteboard socket={socketRef.current} classId={classId} isTeacher={user.role === 'teacher'} />
+            </div>
           </div>
         </div>
       )}

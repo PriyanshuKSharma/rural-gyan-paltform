@@ -3,6 +3,7 @@ const { body, validationResult } = require('express-validator');
 const Student = require('../models/Student');
 const Quiz = require('../models/Quiz');
 const Classroom = require('../models/Classroom');
+const Schedule = require('../models/Schedule');
 const { auth, authorize } = require('../middlewares/auth');
 const aiTutorRoutes = require('../ai_tutor/aiRoutes');
 
@@ -105,6 +106,20 @@ router.get('/materials', async (req, res) => {
       success: true,
       data: allMaterials
     });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Get student's timetable - ALL schedules visible to student
+router.get('/timetable', async (req, res) => {
+  try {
+    // Get all schedules (from all teachers)
+    const schedules = await Schedule.find({})
+      .populate('teacherId', 'fullName')
+      .sort({ dayOfWeek: 1, startTime: 1 });
+    
+    res.json({ success: true, data: schedules });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }

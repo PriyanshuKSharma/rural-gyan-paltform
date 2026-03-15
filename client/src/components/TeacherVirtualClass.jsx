@@ -119,39 +119,40 @@ const TeacherVirtualClass = () => {
   };
 
   return (
-    <div className="p-6 cyber-bg min-h-screen relative overflow-hidden">
-      {/* Background Effects */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(168,85,247,0.05),transparent_70%)]" />
-        <div className="absolute w-full h-full bg-[linear-gradient(rgba(168,85,247,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(168,85,247,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
+    <div className="p-6 bg-[#0a0f1c] text-slate-200 min-h-screen relative overflow-hidden font-sans selection:bg-indigo-500/30">
+      {/* Dynamic Background */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-indigo-600/10 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-purple-600/10 blur-[120px]" />
+        <div className="absolute top-[40%] left-[50%] w-[30vw] h-[30vw] rounded-full bg-blue-600/5 blur-[100px] transform -translate-x-1/2" />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
       </div>
 
       <div className="relative z-10 mb-8">
         <div className="flex items-center gap-4 mb-6">
           <button
             onClick={() => window.history.back()}
-            className="flex items-center gap-2 px-4 py-2 text-cyan-400 hover:text-cyan-300 transition-colors group"
+            className="flex items-center gap-2 px-4 py-2 text-indigo-400 hover:text-indigo-300 transition-colors group"
           >
             <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-            BACK_TO_DASHBOARD
+            Back to Dashboard
           </button>
         </div>
         
         <div className="flex justify-between items-end">
           <div>
-            <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-500 cyber-glitch-text" data-text="CLASS_MANAGEMENT">
-              CLASS_MANAGEMENT
+            <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">
+              Class Management
             </h1>
-            <div className="h-1 w-20 bg-gradient-to-r from-purple-500 to-cyan-500 mt-2" />
-            <p className="text-purple-400 mt-2 font-mono text-sm">ADMIN_ACCESS_GRANTED // CONTROL_PANEL</p>
+            <p className="text-slate-400 mt-2 text-sm font-medium">Create and manage your virtual classroom sessions</p>
           </div>
           
           <button
             onClick={() => setShowCreateForm(true)}
-            className="cyber-btn-primary px-6 py-3 flex items-center gap-2 shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_25px_rgba(168,85,247,0.5)]"
+            className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.4)] flex items-center gap-2 transition-all duration-300 hover:-translate-y-0.5"
           >
             <Plus className="w-5 h-5" />
-            INITIATE_NEW_SESSION
+            New Session
           </button>
         </div>
       </div>
@@ -159,7 +160,7 @@ const TeacherVirtualClass = () => {
       {/* Classes Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
         {classes.map((classItem) => (
-          <div key={classItem._id} className="cyber-card p-6 group hover:border-purple-500/50 transition-all duration-300">
+          <div key={classItem._id} className="bg-slate-900/40 backdrop-blur-md rounded-2xl border border-slate-800 p-6 group hover:border-indigo-500/50 hover:bg-slate-800/60 transition-all duration-500 shadow-xl">
             <div className="flex justify-between items-start mb-4">
               <h3 className="text-xl font-bold text-purple-100 group-hover:text-purple-400 transition-colors">
                 {classItem.title}
@@ -248,18 +249,18 @@ const TeacherVirtualClass = () => {
 
       {/* Create Class Modal */}
       {showCreateForm && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-900 border border-purple-500/30 rounded-xl p-8 w-full max-w-md shadow-[0_0_50px_rgba(168,85,247,0.2)] relative overflow-hidden">
+        <div className="fixed inset-0 bg-[#0a0f1c]/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-900/90 border border-slate-700 rounded-[2rem] p-8 w-full max-w-md shadow-2xl relative overflow-hidden">
             {/* Modal Glow Effect */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent" />
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
             
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-white cyber-glitch-text" data-text="NEW_SESSION">
-                NEW_SESSION
+              <h2 className="text-2xl font-bold text-white">
+                New Session
               </h2>
               <button 
                 onClick={() => setShowCreateForm(false)}
-                className="text-gray-500 hover:text-white transition-colors"
+                className="text-slate-500 hover:text-white transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -267,46 +268,46 @@ const TeacherVirtualClass = () => {
             
             <form onSubmit={createClass} className="space-y-4">
               <div>
-                <label className="block text-xs font-mono text-purple-400 mb-1">SESSION_TITLE</label>
+                <label className="block text-sm font-medium text-slate-300 mb-1">Session Title</label>
                 <input
                   type="text"
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  className="cyber-input w-full"
+                  className="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-300"
                   placeholder="Enter class title..."
                 />
               </div>
               
               <div>
-                <label className="block text-xs font-mono text-purple-400 mb-1">SUBJECT_MATTER</label>
+                <label className="block text-sm font-medium text-slate-300 mb-1">Subject Matter</label>
                 <input
                   type="text"
                   required
                   value={formData.subject}
                   onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                  className="cyber-input w-full"
-                  placeholder="e.g. Advanced Cybernetics"
+                  className="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-300"
+                  placeholder="e.g. Advanced Mathematics"
                 />
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-mono text-purple-400 mb-1">GRADE_LEVEL</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Grade Level</label>
                   <select
                     required
                     value={formData.grade}
                     onChange={(e) => setFormData({...formData, grade: e.target.value})}
-                    className="cyber-input w-full"
+                    className="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-300 appearance-none"
                   >
-                    <option value="">SELECT</option>
+                    <option value="">Select Grade</option>
                     {[1,2,3,4,5,6,7,8,9,10,11,12].map(grade => (
-                      <option key={grade} value={grade}>GRADE {grade}</option>
+                      <option key={grade} value={grade}>Grade {grade}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-mono text-purple-400 mb-1">DURATION (MIN)</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Duration (Min)</label>
                   <input
                     type="number"
                     min="15"
@@ -314,47 +315,47 @@ const TeacherVirtualClass = () => {
                     required
                     value={formData.duration}
                     onChange={(e) => setFormData({...formData, duration: parseInt(e.target.value)})}
-                    className="cyber-input w-full"
+                    className="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-300"
                   />
                 </div>
               </div>
               
               <div>
-                <label className="block text-xs font-mono text-purple-400 mb-1">SCHEDULE_TIME</label>
+                <label className="block text-sm font-medium text-slate-300 mb-1">Schedule Time</label>
                 <input
                   type="datetime-local"
                   required
                   value={formData.scheduledAt}
                   onChange={(e) => setFormData({...formData, scheduledAt: e.target.value})}
-                  className="cyber-input w-full"
+                  className="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-300"
                 />
               </div>
               
               <div>
-                <label className="block text-xs font-mono text-purple-400 mb-1">DESCRIPTION</label>
+                <label className="block text-sm font-medium text-slate-300 mb-1">Description</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  className="cyber-input w-full"
+                  className="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-300"
                   rows="3"
                   placeholder="Session details..."
                 />
               </div>
               
-              <div className="flex gap-3 mt-6">
+              <div className="flex gap-4 mt-8">
                 <button
                   type="button"
                   onClick={() => setShowCreateForm(false)}
-                  className="flex-1 py-3 bg-gray-800 text-gray-400 rounded hover:bg-gray-700 transition-colors font-mono text-sm"
+                  className="flex-1 py-3 bg-slate-800 text-slate-300 rounded-xl hover:bg-slate-700 transition-colors font-semibold"
                 >
-                  CANCEL
+                  Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 cyber-btn-primary py-3 flex items-center justify-center gap-2"
+                  className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.4)] flex items-center justify-center gap-2 transition-all duration-300 hover:-translate-y-0.5 font-semibold"
                 >
-                  <Check className="w-4 h-4" />
-                  CONFIRM_CREATE
+                  <Check className="w-5 h-5" />
+                  Confirm
                 </button>
               </div>
             </form>

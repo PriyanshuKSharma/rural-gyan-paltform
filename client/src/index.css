@@ -117,6 +117,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #0a0f1c; /* Dark neon bg */
+  color: #e2e8f0; /* text-slate-200 */
 }
 
 code {

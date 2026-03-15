@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Eye, EyeOff } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Eye, EyeOff, BookOpen, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
 import indiaMapComplete from '../assets/india_map_complete.png';
 
 const SignUp = () => {
@@ -76,82 +76,75 @@ const SignUp = () => {
     }
   };
 
-  const toggleLanguage = () => {
-    const newLang = i18n.language === 'en' ? 'hi' : 'en';
-    i18n.changeLanguage(newLang);
-  };
-
   return (
-    <div className="min-h-screen w-full flex items-center justify-center cyber-bg font-mono overflow-hidden relative">
-      {/* Background Overlay Effects */}
-      <div 
-        className="absolute inset-0 bg-contain bg-[15%_center] bg-no-repeat opacity-60 mix-blend-screen pointer-events-none"
-        style={{ backgroundImage: `url(${indiaMapComplete})` }}
-      ></div>
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-900/50 to-gray-900 pointer-events-none"></div>
-      
-      {/* Scanline Effect */}
-      <div className="absolute inset-0 pointer-events-none z-50 opacity-10" style={{
-        background: 'linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.5) 51%)',
-        backgroundSize: '100% 4px'
-      }}></div>
+    <div className="min-h-screen bg-[#0a0f1c] text-slate-200 font-sans selection:bg-indigo-500/30 overflow-hidden relative flex items-center justify-center py-12">
+      {/* Dynamic Background */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-indigo-600/20 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-purple-600/20 blur-[120px]" />
+        <div className="absolute top-[40%] left-[50%] w-[30vw] h-[30vw] rounded-full bg-blue-600/10 blur-[100px] transform -translate-x-1/2" />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+      </div>
 
       <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-12 p-6 relative z-10">
+        
         {/* Left Panel - Branding */}
-        <div className="lg:w-1/2 flex flex-col justify-center space-y-8">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 border-2 border-cyan-500 relative flex items-center justify-center bg-gray-900/80 backdrop-blur">
-              <div className="absolute inset-0 border border-cyan-500 blur-[2px] opacity-50"></div>
-              <svg className="w-10 h-10 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
-              </svg>
-            </div>
-            <h1 className="text-4xl font-black tracking-tighter text-white cyber-glitch-text" data-text="NDEMLP">
-              NDEMLP
-            </h1>
-          </div>
+        <div className="lg:w-1/2 flex flex-col justify-center space-y-8 relative">
+          {/* India Map Background */}
+          <div 
+            className="absolute inset-0 z-0 opacity-10 pointer-events-none bg-no-repeat bg-center bg-contain"
+            style={{ backgroundImage: `url(${indiaMapComplete})` }}
+          />
+
+          <div className="relative z-10 space-y-8">
+            <Link to="/" className="flex items-center gap-3 w-fit group">
+              <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg shadow-indigo-500/20 group-hover:shadow-indigo-500/40 transition-shadow">
+                <BookOpen className="h-8 w-8 text-white" />
+              </div>
+              <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+                Rural Gyan
+              </span>
+            </Link>
           
           <div className="space-y-4">
-            <h2 className="text-5xl lg:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-600 leading-tight">
-              JOIN THE<br/>NETWORK
+            <h2 className="text-5xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 leading-tight pb-2">
+              Join the<br/>Network
             </h2>
-            <p className="text-cyan-100/70 text-lg max-w-md border-l-2 border-cyan-500 pl-4">
-              Initialize your neural link and access the future of education.
+            <p className="text-slate-400 text-xl max-w-md font-light">
+              Create an account and access the future of digital education today.
             </p>
           </div>
 
-          <div className="flex gap-4 text-xs font-bold tracking-widest text-cyan-700 uppercase">
-            <span>System: Online</span>
-            <span>//</span>
-            <span>Nodes: 8,492</span>
-            <span>//</span>
-            <span>Secured: True</span>
+          <div className="flex gap-4 text-sm font-medium tracking-widest text-indigo-400/80 uppercase mt-8 border-l-2 border-indigo-500/50 pl-4 py-2">
+            <span>Seamless Interface</span>
+            <span>•</span>
+            <span>AI Powered</span>
+            <span>•</span>
+            <span>Global Access</span>
+          </div>
           </div>
         </div>
 
         {/* Right Panel - Sign Up Form */}
         <div className="lg:w-1/2 flex items-center justify-center">
-          <div className="cyber-card w-full max-w-md p-8 lg:p-12">
-            <div className="absolute top-0 right-0 p-4">
-              <div className="flex gap-1">
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              </div>
-            </div>
-
-            <div className="mb-8 text-center relative">
-              <h3 className="text-2xl font-bold text-white uppercase tracking-widest mb-2">
-                {t('createAccount')}
+          <div className="w-full max-w-md bg-slate-900/40 backdrop-blur-xl rounded-[2rem] border border-slate-800 p-8 lg:p-10 shadow-2xl relative overflow-hidden group">
+            {/* Glowing borders */}
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+            
+            <div className="mb-8 text-center relative z-10">
+              <h3 className="text-3xl font-extrabold text-white mb-2">
+                {t('createAccount') || 'Create Account'}
               </h3>
-              <div className="h-1 w-20 bg-gradient-to-r from-cyan-500 to-purple-600 mx-auto"></div>
+              <p className="text-slate-400">
+                Join our growing community
+              </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
               {/* Full Name */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-cyan-500 uppercase tracking-wider">
-                  {t('fullName')}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300">
+                  {t('fullName') || 'Full Name'}
                 </label>
                 <input
                   id="fullName"
@@ -160,15 +153,15 @@ const SignUp = () => {
                   required
                   value={formData.fullName}
                   onChange={handleChange}
-                  className="cyber-input py-2"
-                  placeholder="ENTER_FULL_NAME"
+                  className="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-300 placeholder:text-slate-500"
+                  placeholder="John Doe"
                 />
               </div>
 
               {/* Email */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-cyan-500 uppercase tracking-wider">
-                  {t('emailAddress')}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300">
+                  {t('emailAddress') || 'Email Address'}
                 </label>
                 <input
                   id="email"
@@ -177,15 +170,15 @@ const SignUp = () => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="cyber-input py-2"
-                  placeholder="ENTER_EMAIL_ADDRESS"
+                  className="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-300 placeholder:text-slate-500"
+                  placeholder="john@example.com"
                 />
               </div>
 
               {/* Role */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-cyan-500 uppercase tracking-wider">
-                  {t('yourRole')}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300">
+                  {t('yourRole') || 'Your Role'}
                 </label>
                 <div className="relative">
                   <select
@@ -194,14 +187,14 @@ const SignUp = () => {
                     required
                     value={formData.role}
                     onChange={handleChange}
-                    className="cyber-input py-2 appearance-none"
+                    className="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-300 appearance-none"
                   >
-                    <option value="" className="bg-gray-900 text-gray-400">SELECT_ROLE</option>
-                    <option value="student" className="bg-gray-900 text-cyan-100">STUDENT</option>
-                    <option value="teacher" className="bg-gray-900 text-cyan-100">TEACHER</option>
-                    <option value="admin" className="bg-gray-900 text-cyan-100">ADMINISTRATOR</option>
+                    <option value="" disabled className="text-slate-500">Select your role</option>
+                    <option value="student" className="bg-slate-800 text-white">Student</option>
+                    <option value="teacher" className="bg-slate-800 text-white">Teacher</option>
+                    <option value="admin" className="bg-slate-800 text-white">Administrator</option>
                   </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-cyan-500">
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
@@ -209,79 +202,71 @@ const SignUp = () => {
                 </div>
               </div>
 
-              {/* Password */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-cyan-500 uppercase tracking-wider">
-                  Password
-                </label>
-                <div className="relative">
-                  <input
-                    id="password"
-                    name="password"
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="cyber-input py-2 pr-12"
-                    placeholder="CREATE_PASSWORD"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-cyan-700 hover:text-cyan-400 transition-colors"
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
+              {/* Passwords - Grid Layout for compact view */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-300">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="password"
+                      name="password"
+                      type={showPassword ? 'text' : 'password'}
+                      required
+                      value={formData.password}
+                      onChange={handleChange}
+                      className="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-300 placeholder:text-slate-500"
+                      placeholder="••••••••"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-white transition-colors"
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              {/* Confirm Password */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-cyan-500 uppercase tracking-wider">
-                  Confirm Password
-                </label>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  required
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className="cyber-input py-2"
-                  placeholder="CONFIRM_PASSWORD"
-                />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-300">
+                    Confirm Password
+                  </label>
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    required
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-300 placeholder:text-slate-500"
+                    placeholder="••••••••"
+                  />
+                </div>
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="cyber-btn-primary w-full mt-6 group"
+                className="w-full relative inline-flex items-center justify-center px-8 py-3.5 text-base font-semibold text-white transition-all duration-300 bg-indigo-600 rounded-xl hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#0a0f1c] focus:ring-indigo-500 shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)] hover:shadow-[0_0_30px_-5px_rgba(99,102,241,0.7)] hover:-translate-y-0.5 mt-6 disabled:opacity-70 disabled:cursor-not-allowed group/btn"
               >
-                <span className="relative z-10 flex items-center justify-center gap-2">
-                  {loading ? 'INITIALIZING...' : 'CREATE ACCOUNT'}
-                  {!loading && (
-                    <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                  )}
-                </span>
+                <span>{loading ? 'Initializing...' : 'Create Account'}</span>
+                {!loading && (
+                  <ArrowRight className="ml-2 w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                )}
               </button>
             </form>
 
-            <div className="mt-6 pt-4 border-t border-gray-800 flex justify-between items-center">
-              <button
-                onClick={toggleLanguage}
-                className="text-xs font-bold text-gray-500 hover:text-cyan-400 transition-colors uppercase tracking-wider flex items-center gap-2"
-              >
-                <div className="w-2 h-2 bg-gray-700 rounded-full"></div>
-                {i18n.language === 'en' ? 'LANG: HI' : 'LANG: EN'}
-              </button>
-              
+            <div className="mt-8 pt-6 border-t border-slate-800 flex justify-between items-center relative z-10">
+              <span className="text-slate-400 text-sm">
+                Already have an account?
+              </span>
               <button
                 onClick={() => navigate('/login')}
-                className="text-xs font-bold text-cyan-600 hover:text-cyan-400 transition-colors uppercase tracking-wider"
+                className="text-sm font-semibold text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1"
               >
-                {t('logIn')} &gt;
+                {t('logIn') || 'Log In'} <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -290,6 +275,5 @@ const SignUp = () => {
     </div>
   );
 };
-
 
 export default SignUp;

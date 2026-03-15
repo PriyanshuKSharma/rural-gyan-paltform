@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './context/AuthContext';
 
 // Pages
+import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import AdminDashboard from './pages/AdminDashboard';
@@ -134,13 +135,7 @@ const AppRoutes = () => {
 
       <Route
         path="/"
-        element={
-          user ? (
-            <Navigate to={`/${user.role}`} replace />
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        }
+        element={<LandingPage />}
       />
 
       <Route

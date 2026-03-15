@@ -117,6 +117,13 @@ export const teacherAPI = {
     const [classroomId, matId] = materialId.split('/');
     return api.delete(`/teacher/materials/${classroomId}/${matId}`);
   },
+  getPerformanceAnalytics: () => api.get('/teacher/performance-analytics'),
+  // Schedule APIs
+  getSchedule: () => api.get('/teacher/schedule'),
+  getScheduleByClass: (className) => api.get(`/teacher/schedule/class/${className}`),
+  createSchedule: (data) => api.post('/teacher/schedule', data),
+  updateSchedule: (id, data) => api.put(`/teacher/schedule/${id}`, data),
+  deleteSchedule: (id) => api.delete(`/teacher/schedule/${id}`),
 };
 
 export const studentAPI = {
@@ -148,6 +155,7 @@ export const studentAPI = {
     };
     return api.post('/student/transcribe-audio', audioData, config);
   },
+  getTimetable: () => api.get('/student/timetable'),
 };
 
 export default api;
