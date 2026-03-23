@@ -16,10 +16,12 @@ const VideoCard = ({ peer, isLocal, stream, userName }) => {
 
   useEffect(() => {
     if (peer) {
+      // Attach stream if already available
+      if (peer._remoteStreams && peer._remoteStreams.length > 0) {
+        if (videoRef.current) videoRef.current.srcObject = peer._remoteStreams[0];
+      }
       peer.on('stream', (remoteStream) => {
-        if (videoRef.current) {
-          videoRef.current.srcObject = remoteStream;
-        }
+        if (videoRef.current) videoRef.current.srcObject = remoteStream;
       });
     } else if (stream && videoRef.current) {
       videoRef.current.srcObject = stream;
@@ -52,6 +54,7 @@ const VirtualClass = () => {
   const { user } = useAuth();
   
   const [peers, setPeers] = useState([]);
+  const [participants, setParticipants] = useState([]);
   const [stream, setStream] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
@@ -62,6 +65,7 @@ const VirtualClass = () => {
   const [showParticipants, setShowParticipants] = useState(false);
   const [showWhiteboard, setShowWhiteboard] = useState(false);
   const [classData, setClassData] = useState(null);
+  const [teacherStream, setTeacherStream] = useState(null);
   const [timer, setTimer] = useState('00:00:00');
   const [startTime] = useState(Date.now());
   const [captionsEnabled, setCaptionsEnabled] = useState(false);
@@ -115,6 +119,8 @@ const VirtualClass = () => {
   const socketRef = useRef();
   const peersRef = useRef([]);
   const userVideo = useRef();
+  const teacherVideoRef = useRef();
+  const streamRef = useRef(null);
   const screenTrackRef = useRef();
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
@@ -131,172 +137,223 @@ const VirtualClass = () => {
   }, [startTime]);
 
   useEffect(() => {
+    const teacherPeerEntry = peers.find((p) => p.userType === 'teacher');
+    if (!teacherPeerEntry || !teacherPeerEntry.peer) {
+      setTeacherStream(null);
+      return;
+    }
+
+    const handleTeacherStream = (remoteStream) => {
+      setTeacherStream(remoteStream);
+    };
+
+    if (teacherPeerEntry.peer._remoteStreams && teacherPeerEntry.peer._remoteStreams[0]) {
+      setTeacherStream(teacherPeerEntry.peer._remoteStreams[0]);
+    }
+
+    teacherPeerEntry.peer.on('stream', handleTeacherStream);
+
+    return () => {
+      teacherPeerEntry.peer.off('stream', handleTeacherStream);
+    };
+  }, [peers]);
+
+  useEffect(() => {
+    if (teacherVideoRef.current) {
+      teacherVideoRef.current.srcObject = teacherStream;
+    }
+  }, [teacherStream]);
+
+  useEffect(() => {
     fetchClassData();
     socketRef.current = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:5000');
     
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-      .then((currentStream) => {
-        setStream(currentStream);
-        if (userVideo.current) {
-          userVideo.current.srcObject = currentStream;
-        }
+    // Set up socket event listeners immediately
+    socketRef.current.on('connect', () => {
+      console.log('Socket connected:', socketRef.current.id);
+      
+      // Now that socket is connected, request camera access and join class
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        .then((currentStream) => {
+          console.log('Camera access granted');
+          setStream(currentStream);
+          streamRef.current = currentStream;
 
-        socketRef.current.emit('join-virtual-class', {
-          classId,
-          userId: user._id,
-          userType: user.role,
-          userName: user.fullName
-        });
-
-        // Handle existing participants (when joining a room with people already in it)
-        socketRef.current.on('existing-participants', (participants) => {
-          console.log('🟣 Existing participants:', participants);
-          participants.forEach(participant => {
-            const peer = createPeer(participant.socketId, socketRef.current.id, currentStream);
-            peersRef.current.push({
-              peerID: participant.socketId,
-              peer,
-              userName: participant.userName || 'Unknown User',
-              userId: participant.userId,
-              userType: participant.userType
-            });
-            setPeers((users) => [...users, { 
-              peer, 
-              userName: participant.userName || 'Unknown User', 
-              peerID: participant.socketId,
-              userId: participant.userId,
-              userType: participant.userType
-            }]);
+          // Join virtual class after camera is ready and socket is connected
+          socketRef.current.emit('join-virtual-class', {
+            classId,
+            userId: user._id,
+            userType: user.role,
+            userName: user.fullName
+          });
+        })
+        .catch((error) => {
+          console.error('Camera access denied:', error);
+          console.log('Error details:', error.name, error.message);
+          toast.error('Camera/microphone access denied. Please allow permissions and refresh.');
+          
+          // Still join the class even without camera
+          socketRef.current.emit('join-virtual-class', {
+            classId,
+            userId: user._id,
+            userType: user.role,
+            userName: user.fullName
           });
         });
+    });
 
-        // Existing users receive this when a new user joins
-        socketRef.current.on('participant-joined', (payload) => {
-          console.log('🟢 Participant joined:', payload);
-          const peer = createPeer(payload.socketId, socketRef.current.id, currentStream);
-          peersRef.current.push({
-            peerID: payload.socketId,
-            peer,
-            userName: payload.userName || 'Unknown User',
-            userId: payload.userId,
-            userType: payload.userType
-          });
-          setPeers((users) => [...users, { 
-            peer, 
-            userName: payload.userName || 'Unknown User', 
-            peerID: payload.socketId,
-            userId: payload.userId,
-            userType: payload.userType
-          }]);
-          toast.success(`${payload.userName} joined`);
-        });
+    // Handle existing participants list
+    socketRef.current.on('existing-participants', (existingParticipants) => {
+      console.log('Received existing participants:', existingParticipants);
+      setParticipants(existingParticipants);
+    });
 
-        // New user receives this when an existing user offers a connection
-        socketRef.current.on('video-offer', (payload) => {
-          console.log('🔵 Video offer received:', payload);
-          const peer = addPeer(payload.offer, payload.fromSocketId, currentStream);
-          peersRef.current.push({
-            peerID: payload.fromSocketId,
-            peer,
-            userName: payload.userName || 'Connecting...',
-            userId: payload.fromUserId,
-            userType: payload.userType || 'participant'
-          });
-          setPeers((users) => [...users, { 
-            peer, 
-            userName: payload.userName || 'Connecting...',
-            peerID: payload.fromSocketId,
-            userId: payload.fromUserId,
-            userType: payload.userType || 'participant'
-          }]);
+    // New joiner: initiate offers to all existing participants
+    socketRef.current.on('initiate-with-existing', (participants) => {
+      console.log('Initiate with existing:', participants);
+      if (!streamRef.current) {
+        console.log('Stream not ready yet, skipping peer creation');
+        return;
+      }
+      participants.forEach(participant => {
+        if (peersRef.current.find(p => p.peerID === participant.socketId)) return;
+        const peer = createPeer(participant.socketId, socketRef.current.id, streamRef.current);
+        peersRef.current.push({
+          peerID: participant.socketId,
+          peer,
+          userName: participant.userName || 'Unknown',
+          userId: participant.userId,
+          userType: participant.userType
         });
-
-        socketRef.current.on('video-answer', (payload) => {
-          console.log('🟡 Video answer received:', payload);
-          const item = peersRef.current.find((p) => p.peerID === payload.fromSocketId);
-          if (item) {
-            item.peer.signal(payload.answer);
-          }
-        });
-
-        socketRef.current.on('ice-candidate', (payload) => {
-          const item = peersRef.current.find((p) => p.peerID === payload.fromSocketId);
-          if (item) {
-            item.peer.signal(payload.candidate);
-          }
-        });
-
-        socketRef.current.on('chat-message', (message) => {
-          setMessages((msgs) => [...msgs, message]);
-        });
-
-        socketRef.current.on('caption-update', (data) => {
-          if (data.userId !== user._id) {
-            translateText(data.caption, captionLanguage).then(translated => {
-              setCurrentCaption(translated);
-              
-              if (captionTimeoutRef.current) {
-                clearTimeout(captionTimeoutRef.current);
-              }
-              
-              captionTimeoutRef.current = setTimeout(() => {
-                setCurrentCaption('');
-              }, 5000);
-            });
-          }
-        });
-
-        // Listen for class ended event
-        socketRef.current.on('class-ended', () => {
-          toast.error('Class has been ended by teacher');
-          if (currentStream) {
-            currentStream.getTracks().forEach(track => track.stop());
-          }
-          const dashboardPath = user.role === 'teacher' ? '/teacher/dashboard' : 
-                               user.role === 'student' ? '/student/dashboard' : 
-                               '/dashboard';
-          setTimeout(() => navigate(dashboardPath), 2000);
-        });
-
-        // Listen for teacher controls
-        socketRef.current.on('force-mute', () => {
-          if (currentStream) {
-            currentStream.getAudioTracks()[0].enabled = false;
-            setIsAudioEnabled(false);
-            toast.error('Teacher muted your microphone');
-          }
-        });
-
-        socketRef.current.on('force-video-off', () => {
-          if (currentStream) {
-            currentStream.getVideoTracks()[0].enabled = false;
-            setIsVideoEnabled(false);
-            toast.error('Teacher turned off your camera');
-          }
-        });
-
-        // Raise hand events
-        socketRef.current.on('hand-raised', (data) => {
-          setRaisedHands(prev => [...prev, data]);
-          if (user.role === 'teacher') {
-            toast(`✋ ${data.userName} raised their hand`, { icon: '✋' });
-          }
-        });
-
-        socketRef.current.on('hand-lowered', (data) => {
-          setRaisedHands(prev => prev.filter(h => h.userId !== data.userId));
-        });
-
-        socketRef.current.on('all-hands-lowered', () => {
-          setRaisedHands([]);
-          setIsHandRaised(false);
-        });
-      })
-      .catch((err) => {
-        console.error("Error accessing media devices:", err);
-        toast.error("Could not access camera/microphone");
+        setPeers(prev => [...prev, {
+          peer,
+          userName: participant.userName || 'Unknown',
+          peerID: participant.socketId,
+          userId: participant.userId,
+          userType: participant.userType
+        }]);
       });
+    });
 
+    // Existing user notified that someone new joined — wait for their offer
+    socketRef.current.on('participant-joined', (payload) => {
+      console.log('Participant joined:', payload);
+      toast.success(`${payload.userName} joined`);
+      // Add to participants list if not already present
+      setParticipants(prev => {
+        if (prev.find(p => p.userId === payload.userId)) return prev;
+        return [...prev, {
+          socketId: payload.socketId,
+          userId: payload.userId,
+          userType: payload.userType,
+          userName: payload.userName
+        }];
+      });
+    });
+
+    // Receive offer from new joiner, respond with answer
+    socketRef.current.on('video-offer', (payload) => {
+      console.log('Received video offer from:', payload.fromSocketId);
+      if (peersRef.current.find(p => p.peerID === payload.fromSocketId)) return;
+      const peer = addPeer(payload.offer, payload.fromSocketId, streamRef.current);
+      peersRef.current.push({
+        peerID: payload.fromSocketId,
+        peer,
+        userName: payload.userName || 'Unknown',
+        userId: payload.fromUserId,
+        userType: payload.userType || 'participant'
+      });
+      setPeers(prev => [...prev, {
+        peer,
+        userName: payload.userName || 'Unknown',
+        peerID: payload.fromSocketId,
+        userId: payload.fromUserId,
+        userType: payload.userType || 'participant'
+      }]);
+    });
+
+    socketRef.current.on('video-answer', (payload) => {
+      console.log('Received video answer from:', payload.fromSocketId);
+      const item = peersRef.current.find((p) => p.peerID === payload.fromSocketId);
+      if (item) item.peer.signal(payload.answer);
+    });
+
+    socketRef.current.on('ice-candidate', (payload) => {
+      console.log('Received ice candidate from:', payload.fromSocketId);
+      const item = peersRef.current.find((p) => p.peerID === payload.fromSocketId);
+      if (item) item.peer.signal(payload.candidate);
+    });
+
+    socketRef.current.on('participant-left', (payload) => {
+      console.log('Participant left:', payload);
+      peersRef.current = peersRef.current.filter(p => p.peerID !== payload.socketId);
+      setPeers(prev => prev.filter(p => p.peerID !== payload.socketId));
+      setParticipants(prev => prev.filter(p => p.socketId !== payload.socketId));
+    });
+
+    socketRef.current.on('disconnect', () => {
+      console.log('Socket disconnected, redirecting to dashboard');
+      const dashboardPath = user.role === 'teacher' ? '/teacher/dashboard' :
+                           user.role === 'student' ? '/student/dashboard' :
+                           '/dashboard';
+      navigate(dashboardPath);
+    });
+
+    // Chat and other events
+    socketRef.current.on('chat-message', (message) => {
+      if (message.userId !== user._id) {
+        setMessages((msgs) => [...msgs, message]);
+      }
+    });
+
+    // Raise hand events
+    socketRef.current.on('hand-raised', (data) => {
+      console.log('Hand raised:', data);
+      setRaisedHands(prev => [...prev, data]);
+      if (user.role === 'teacher') {
+        toast(`✋ ${data.userName} raised their hand`, { icon: '✋' });
+      }
+    });
+
+    socketRef.current.on('hand-lowered', (data) => {
+      setRaisedHands(prev => prev.filter(h => h.userId !== data.userId));
+    });
+
+    socketRef.current.on('all-hands-lowered', () => {
+      setRaisedHands([]);
+      setIsHandRaised(false);
+    });
+
+    // Caption events
+    socketRef.current.on('caption-update', (data) => {
+      if (data.userId !== user._id) {
+        translateText(data.caption, captionLanguage).then(translated => {
+          setCurrentCaption(translated);
+          
+          if (captionTimeoutRef.current) {
+            clearTimeout(captionTimeoutRef.current);
+          }
+          
+          captionTimeoutRef.current = setTimeout(() => {
+            setCurrentCaption('');
+          }, 5000);
+        });
+      }
+    });
+
+    // Listen for class ended event
+    socketRef.current.on('class-ended', () => {
+      toast.error('Class has been ended by teacher');
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+      const dashboardPath = user.role === 'teacher' ? '/teacher/dashboard' : 
+                           user.role === 'student' ? '/student/dashboard' : 
+                           '/dashboard';
+      setTimeout(() => navigate(dashboardPath), 2000);
+    });
+    
+    // Cleanup on unmount
     return () => {
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
@@ -305,8 +362,7 @@ const VirtualClass = () => {
         socketRef.current.disconnect();
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [classId]);
+  }, [classId, user]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -397,6 +453,7 @@ const VirtualClass = () => {
   };
 
   function createPeer(userToSignal, callerID, stream) {
+    console.log('Creating peer to:', userToSignal);
     const peer = new Peer({
       initiator: true,
       trickle: true,
@@ -411,21 +468,37 @@ const VirtualClass = () => {
     });
 
     peer.on('signal', (signal) => {
+      console.log('Peer signal:', signal.type);
       if (signal.type === 'offer') {
-        socketRef.current.emit('video-offer', { offer: signal, targetSocketId: userToSignal });
+        console.log('Sending video-offer to:', userToSignal);
+        socketRef.current.emit('video-offer', { 
+          offer: signal, 
+          targetSocketId: userToSignal,
+          userName: user.fullName,
+          userType: user.role
+        });
       } else if (signal.candidate) {
         socketRef.current.emit('ice-candidate', { candidate: signal, targetSocketId: userToSignal });
       }
+    });
+
+    peer.on('connect', () => {
+      console.log('Peer connected');
+    });
+
+    peer.on('error', (err) => {
+      console.error('Peer error:', err);
     });
 
     return peer;
   }
 
   function addPeer(incomingSignal, callerID, stream) {
+    console.log('Adding peer from:', callerID);
     const peer = new Peer({
       initiator: false,
       trickle: true,
-      stream,
+      stream: stream || null,  // Pass stream only if available
       config: {
         iceServers: [
           { urls: 'stun:stun.l.google.com:19302' },
@@ -436,11 +509,21 @@ const VirtualClass = () => {
     });
 
     peer.on('signal', (signal) => {
+      console.log('Responder signal:', signal.type);
       if (signal.type === 'answer') {
+        console.log('Sending video-answer to:', callerID);
         socketRef.current.emit('video-answer', { answer: signal, targetSocketId: callerID });
       } else if (signal.candidate) {
         socketRef.current.emit('ice-candidate', { candidate: signal, targetSocketId: callerID });
       }
+    });
+
+    peer.on('connect', () => {
+      console.log('Responder peer connected');
+    });
+
+    peer.on('error', (err) => {
+      console.error('Responder peer error:', err);
     });
 
     peer.signal(incomingSignal);
@@ -459,6 +542,45 @@ const VirtualClass = () => {
     if (stream) {
       stream.getVideoTracks()[0].enabled = !isVideoEnabled;
       setIsVideoEnabled(!isVideoEnabled);
+    }
+  };
+
+  const retryCamera = async () => {
+    try {
+      console.log('Retrying camera access');
+      const currentStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      console.log('Camera access granted on retry');
+      setStream(currentStream);
+      streamRef.current = currentStream;
+      if (userVideo.current) {
+        userVideo.current.srcObject = currentStream;
+      }
+      
+      // Now that we have stream, create peers with all existing participants
+      participants.forEach(participant => {
+        if (peersRef.current.find(p => p.peerID === participant.socketId)) return;
+        const peer = createPeer(participant.socketId, socketRef.current.id, currentStream);
+        peersRef.current.push({
+          peerID: participant.socketId,
+          peer,
+          userName: participant.userName || 'Unknown',
+          userId: participant.userId,
+          userType: participant.userType
+        });
+        setPeers(prev => [...prev, {
+          peer,
+          userName: participant.userName || 'Unknown',
+          peerID: participant.socketId,
+          userId: participant.userId,
+          userType: participant.userType
+        }]);
+      });
+      
+      toast.success('Camera enabled successfully');
+    } catch (error) {
+      console.error('Camera access denied on retry:', error);
+      console.log('Retry error details:', error.name, error.message);
+      toast.error('Camera/microphone access denied. Please allow permissions and try again.');
     }
   };
 
@@ -582,7 +704,12 @@ const VirtualClass = () => {
       
       // Disconnect socket
       if (socketRef.current) {
-        socketRef.current.emit('leave-virtual-class', classId);
+socketRef.current.emit('leave-virtual-class', classId);
+        peersRef.current.forEach(({ peer }) => {
+          if (peer) peer.destroy();
+        });
+        peersRef.current = [];
+        setPeers([]);
         socketRef.current.disconnect();
       }
       
@@ -695,16 +822,7 @@ const VirtualClass = () => {
                     <video
                       playsInline
                       autoPlay
-                      ref={(ref) => {
-                        if (ref) {
-                          const teacherPeer = peers.find(p => p.userType === 'teacher');
-                          if (teacherPeer?.peer) {
-                            teacherPeer.peer.on('stream', (remoteStream) => {
-                              ref.srcObject = remoteStream;
-                            });
-                          }
-                        }
-                      }}
+                      ref={teacherVideoRef}
                       className="w-full h-full object-contain bg-black"
                     />
                     <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full border border-cyan-500/50 z-10">
@@ -776,6 +894,16 @@ const VirtualClass = () => {
           >
             {isVideoEnabled ? <Video size={20} /> : <VideoOff size={20} />}
           </button>
+          
+          {!stream && (
+            <button 
+              onClick={retryCamera}
+              className="p-3 rounded-full bg-orange-500 hover:bg-orange-600 text-white transition-all duration-300 shadow-[0_0_15px_rgba(249,115,22,0.5)]"
+              title="Enable Camera"
+            >
+              <Video size={20} />
+            </button>
+          )}
           
           <button 
             onClick={toggleScreenShare}
@@ -933,11 +1061,11 @@ const VirtualClass = () => {
                   <Mic size={14} className="text-green-500" />
                 </div>
                 
-                {peers.map((peer, idx) => (
+                {participants.map((participant, idx) => (
                   <div key={idx} className="flex items-center gap-3 p-2 rounded hover:bg-gray-800 border border-transparent hover:border-gray-700 transition-colors">
                     <div className="w-8 h-8 rounded bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold text-xs relative">
-                      {peer.userName?.charAt(0) || '?'}
-                      {raisedHands.some(h => h.userId === peer.userId) && (
+                      {participant.userName?.charAt(0) || '?'}
+                      {raisedHands.some(h => h.userId === participant.userId) && (
                         <span className="absolute -top-1 -right-1 text-orange-500 animate-bounce">
                           ✋
                         </span>
@@ -945,38 +1073,38 @@ const VirtualClass = () => {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-300 flex items-center gap-2">
-                        {peer.userName || 'Unknown User'}
-                        {raisedHands.some(h => h.userId === peer.userId) && (
+                        {participant.userName || 'Unknown User'}
+                        {raisedHands.some(h => h.userId === participant.userId) && (
                           <span className="text-orange-500 text-xs animate-pulse">✋</span>
                         )}
                       </p>
-                      <p className="text-[10px] text-gray-500">{peer.userType?.toUpperCase() || 'PARTICIPANT'}</p>
+                      <p className="text-[10px] text-gray-500">{participant.userType?.toUpperCase() || 'PARTICIPANT'}</p>
                     </div>
-                    {user.role === 'teacher' && peer.userType === 'student' && (
+                    {user.role === 'teacher' && participant.userType === 'student' && (
                       <div className="flex gap-1">
                         <button 
-                          onClick={() => muteStudent(peer.peerID)}
+                          onClick={() => muteStudent(participant.socketId)}
                           className="p-1 text-orange-500 hover:bg-orange-500/20 rounded"
                           title="Mute Student"
                         >
                           <VolumeX size={14} />
                         </button>
                         <button 
-                          onClick={() => turnOffStudentVideo(peer.peerID)}
+                          onClick={() => turnOffStudentVideo(participant.socketId)}
                           className="p-1 text-blue-500 hover:bg-blue-500/20 rounded"
                           title="Turn Off Camera"
                         >
                           <VideoOff size={14} />
                         </button>
                         <button 
-                          onClick={() => markAttendance(peer.userId, true)}
+                          onClick={() => markAttendance(participant.userId, true)}
                           className="p-1 text-green-500 hover:bg-green-500/20 rounded"
                           title="Mark Present"
                         >
                           <CheckCircle size={14} />
                         </button>
                         <button 
-                          onClick={() => markAttendance(peer.userId, false)}
+                          onClick={() => markAttendance(participant.userId, false)}
                           className="p-1 text-red-500 hover:bg-red-500/20 rounded"
                           title="Mark Absent"
                         >

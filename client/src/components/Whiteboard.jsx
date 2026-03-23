@@ -1,5 +1,5 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Pencil, Eraser, Square, Circle, Type, Trash2, Download, Palette } from 'lucide-react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { Pencil, Eraser, Trash2, Download } from 'lucide-react';
 
 const Whiteboard = ({ socket, classId, isTeacher }) => {
   const canvasRef = useRef(null);
@@ -9,6 +9,7 @@ const Whiteboard = ({ socket, classId, isTeacher }) => {
   const [lineWidth, setLineWidth] = useState(2);
   const [ctx, setCtx] = useState(null);
   const lastPosRef = useRef({ x: 0, y: 0 });
+  const remoteLastPosRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -20,33 +21,82 @@ const Whiteboard = ({ socket, classId, isTeacher }) => {
     }
   }, []);
 
+  const drawFromDataRef = useRef(null);
+  drawFromDataRef.current = (data) => {
+    if (!ctx) return;
+    if (data.isStart) {
+      remoteLastPosRef.current = { x: data.x, y: data.y };
+    } else {
+      ctx.beginPath();
+      if (data.tool === 'eraser') {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.lineWidth = 20;
+      } else {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = data.color;
+        ctx.lineWidth = data.lineWidth;
+      }
+      ctx.moveTo(remoteLastPosRef.current.x, remoteLastPosRef.current.y);
+      ctx.lineTo(data.x, data.y);
+      ctx.stroke();
+      ctx.closePath();
+      remoteLastPosRef.current = { x: data.x, y: data.y };
+    }
+  };
+
+  const clearCanvas = useCallback(() => {
+    if (!ctx || !canvasRef.current) return;
+    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    ctx.beginPath();
+  }, [ctx]);
+
   useEffect(() => {
-    // Listen for drawing from others
-    socket?.on('whiteboard-draw', (data) => {
-      if (ctx && data.classId === classId) {
-        drawFromData(data);
-      }
-    });
-
-    socket?.on('whiteboard-clear', (data) => {
+    if (!socket) {
+      console.log('Whiteboard: No socket provided');
+      return;
+    }
+    console.log('Whiteboard: Setting up socket listeners for classId:', classId);
+    console.log('Whiteboard: Socket connected:', socket.connected);
+    console.log('Whiteboard: Socket id:', socket.id);
+    const handleRemoteDraw = (data) => {
+      console.log('Whiteboard: Received remote draw:', data);
       if (data.classId === classId) {
-        clearCanvas();
+        console.log('Whiteboard: Drawing on canvas');
+        drawFromDataRef.current(data);
       }
-    });
-
-    return () => {
-      socket?.off('whiteboard-draw');
-      socket?.off('whiteboard-clear');
     };
-  }, [socket, classId, ctx]);
+    const handleRemoteClear = (data) => {
+      console.log('Whiteboard: Received clear event');
+      if (data.classId === classId) clearCanvas();
+    };
+    socket.on('whiteboard-draw', handleRemoteDraw);
+    socket.on('whiteboard-clear', handleRemoteClear);
+    return () => {
+      socket.off('whiteboard-draw', handleRemoteDraw);
+      socket.off('whiteboard-clear', handleRemoteClear);
+    };
+  }, [socket, classId, clearCanvas]);
 
   const startDrawing = (e) => {
-    if (!isTeacher || !ctx) return;
+    if (!isTeacher || !ctx) {
+      console.log('Whiteboard: Cannot draw - isTeacher:', isTeacher, 'ctx:', !!ctx);
+      return;
+    }
+    console.log('Whiteboard: Starting drawing');
     setIsDrawing(true);
     const { offsetX, offsetY } = e.nativeEvent;
     lastPosRef.current = { x: offsetX, y: offsetY };
     
     // Broadcast start position
+    console.log('Whiteboard: Emitting start draw:', {
+      classId,
+      x: offsetX,
+      y: offsetY,
+      color: color,
+      lineWidth: lineWidth,
+      tool,
+      isStart: true
+    });
     socket?.emit('whiteboard-draw', {
       classId,
       x: offsetX,
@@ -60,6 +110,7 @@ const Whiteboard = ({ socket, classId, isTeacher }) => {
 
   const draw = (e) => {
     if (!isDrawing || !isTeacher || !ctx) return;
+    console.log('Whiteboard: Drawing at position');
     const { offsetX, offsetY } = e.nativeEvent;
     
     ctx.beginPath();
@@ -79,6 +130,15 @@ const Whiteboard = ({ socket, classId, isTeacher }) => {
     lastPosRef.current = { x: offsetX, y: offsetY };
 
     // Broadcast drawing
+    console.log('Whiteboard: Emitting draw:', {
+      classId,
+      x: offsetX,
+      y: offsetY,
+      color: color,
+      lineWidth: lineWidth,
+      tool,
+      isStart: false
+    });
     socket?.emit('whiteboard-draw', {
       classId,
       x: offsetX,
@@ -94,39 +154,11 @@ const Whiteboard = ({ socket, classId, isTeacher }) => {
     setIsDrawing(false);
   };
 
-  const drawFromData = (data) => {
-    if (!ctx) return;
-    
-    if (data.isStart) {
-      lastPosRef.current = { x: data.x, y: data.y };
-    } else {
-      ctx.beginPath();
-      if (data.tool === 'eraser') {
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.lineWidth = 20;
-      } else {
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.strokeStyle = data.color;
-        ctx.lineWidth = data.lineWidth;
-      }
-      ctx.moveTo(lastPosRef.current.x, lastPosRef.current.y);
-      ctx.lineTo(data.x, data.y);
-      ctx.stroke();
-      ctx.closePath();
-      
-      lastPosRef.current = { x: data.x, y: data.y };
-    }
-  };
-
-  const clearCanvas = () => {
-    if (!ctx || !canvasRef.current) return;
-    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-    ctx.beginPath();
-  };
-
   const handleClear = () => {
     if (!isTeacher) return;
+    console.log('Whiteboard: Clearing canvas');
     clearCanvas();
+    console.log('Whiteboard: Emitting clear:', { classId });
     socket?.emit('whiteboard-clear', { classId });
   };
 

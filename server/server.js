@@ -137,6 +137,9 @@ io.on('connection', (socket) => {
       socketId: socket.id
     });
 
+    // Tell the new joiner to initiate offers to all existing participants (if they have stream)
+    socket.emit('initiate-with-existing', existingParticipants);
+
     console.log(`${userType} ${userName} joined virtual class ${classId}`);
   });
 
@@ -144,9 +147,8 @@ io.on('connection', (socket) => {
   socket.on('leave-virtual-class', (classId) => {
     socket.leave(classId);
     socket.to(classId).emit('participant-left', {
-      userId: socket.userId,
-      userType: socket.userType,
-      socketId: socket.id
+      socketId: socket.id,
+      userId: socket.userId
     });
     console.log(`User ${socket.userId} left virtual class ${classId}`);
   });
@@ -171,8 +173,8 @@ io.on('connection', (socket) => {
       offer: data.offer,
       fromSocketId: socket.id,
       fromUserId: socket.userId,
-      userName: socket.userName,
-      userType: socket.userType
+      userName: data.userName || socket.userName,
+      userType: data.userType || socket.userType
     });
   });
 
@@ -265,10 +267,12 @@ io.on('connection', (socket) => {
 
   // Whiteboard events
   socket.on('whiteboard-draw', (data) => {
+    console.log('Server: Received whiteboard-draw:', data);
     socket.to(data.classId).emit('whiteboard-draw', data);
   });
 
   socket.on('whiteboard-clear', (data) => {
+    console.log('Server: Received whiteboard-clear:', data);
     socket.to(data.classId).emit('whiteboard-clear', data);
   });
 

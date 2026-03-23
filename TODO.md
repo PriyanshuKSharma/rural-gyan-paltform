@@ -1,5 +1,14 @@
-# TODO: Fix Quiz Creation Class Selection Issue
+# Virtual Class Fix Progress
 
-## Completed Tasks
-- [x] Modify fetchClasses function in QuizManagement.jsx to use classrooms.className if assignedClasses is empty
-- [x] Test the changes to confirm class dropdown is populated and quiz creation works
+## ✅ **COMPLETED (2024-11-09)**
+- [x] Memory leak fix (peer.destroy())
+- [x] Chat duplicate fix 
+- [x] Client env vars created
+- [x] MD changelog created
+
+## ⏳ **PENDING** (Next)
+- [ ] Server participant-left emit fix
+- [ ] Client participant-left handler
+- [ ] Screen share await fix
+
+**Next step**: `npm run dev` → Test 2 tabs
