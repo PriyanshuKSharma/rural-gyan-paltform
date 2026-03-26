@@ -7,7 +7,7 @@ async function generateGeminiResponse(prompt, systemInstruction) {
     try {
         // For text-only input, use the gemini-2.0-flash model
         const model = genAI.getGenerativeModel({
-            model: "gemini-2.0-flash"
+            model: "gemini-2.5-flash"
         });
 
         // Prepend system instruction to the prompt since gemini-pro doesn't support it in config

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Send, Brain, User, Mic, Image, FileText, Copy, ThumbsUp, ThumbsDown, MicOff, X, ChevronDown, ChevronUp, Sparkles, Zap, BookOpen, Settings, Maximize2, Minimize2 } from 'lucide-react';
+import { Send, Brain, User, Image, FileText, Copy, ThumbsUp, ThumbsDown, X, ChevronDown, ChevronUp, Sparkles, Zap, BookOpen, Settings, Maximize2, Minimize2 } from 'lucide-react';
 import { studentAPI } from '../../services/api';
 import { io } from "socket.io-client";
 import toast from 'react-hot-toast';
@@ -17,7 +17,6 @@ const AITutor = () => {
   }]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
@@ -53,7 +52,6 @@ const AITutor = () => {
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
   const imageInputRef = useRef(null);
-  const mediaRecorderRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const MESSAGES_PER_PAGE = 50;
 
@@ -150,46 +148,6 @@ const AITutor = () => {
 
   const removeFile = (index) => {
     setUploadedFiles(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      const chunks = [];
-
-      mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(chunks, { type: 'audio/wav' });
-        transcribeAudio(blob);
-        stream.getTracks().forEach(track => track.stop());
-      };
-
-      mediaRecorderRef.current = mediaRecorder;
-      mediaRecorder.start();
-      setIsRecording(true);
-    } catch (error) {
-      toast.error('Microphone access denied');
-    }
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-    }
-  };
-
-  const transcribeAudio = async (audioBlob) => {
-    try {
-      const formData = new FormData();
-      formData.append('audio', audioBlob, 'recording.wav');
-      const response = await studentAPI.transcribeAudio(formData);
-      setInputMessage(prev => prev + ' ' + response.data.text);
-    } catch (error) {
-      console.error('Transcription error:', error);
-      toast.error('Voice input feature is not available');
-    }
   };
 
   const copyMessage = (content) => {
@@ -499,18 +457,6 @@ const AITutor = () => {
         <form onSubmit={handleSendMessage} className="flex items-end space-x-4">
           <div className="flex-1">
             <div className="flex items-center space-x-3 mb-3">
-              <button
-                type="button"
-                onClick={isRecording ? stopRecording : startRecording}
-                className={`p-3 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-lg hover:shadow-[0_0_15px_rgba(99,102,241,0.3)] hover:-translate-y-0.5 ${isRecording
-                    ? 'bg-rose-500 text-white focus:ring-rose-500 animate-pulse shadow-[0_0_20px_rgba(244,63,94,0.4)]'
-                    : 'bg-slate-800 text-slate-300 hover:text-indigo-400 focus:ring-indigo-500 border border-slate-700 hover:border-indigo-500/50'
-                  }`}
-                title={isRecording ? 'Stop recording' : 'Voice input'}
-                aria-label={isRecording ? 'Stop recording' : 'Start voice recording'}
-              >
-                {isRecording ? <MicOff size={20} /> : <Mic size={20} />}
-              </button>
               <button
                 type="button"
                 onClick={() => imageInputRef.current?.click()}

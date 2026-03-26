@@ -38,9 +38,7 @@ async function handleTutorMessage(payload) {
 
         if (error.status === 429 || error.message.includes("429")) {
             return {
-                response: "⚠️ **OpenAI Quota Exceeded**\n\nI am currently running in **Offline/Demo Mode** because your OpenAI API key has run out of credits.\n\nHere is a simulated response:\n\n" +
-                    "This is where the AI explanation would appear. Since I cannot connect to the brain, I can't analyze your specific question right now, but the system architecture is working perfectly! 🚀\n\n" +
-                    "**To fix this:** Please add credits to your OpenAI account at platform.openai.com/billing.",
+                response: "⚠️ **AI service is temporarily busy.** Please try again in a few seconds.",
                 extracted: extractedText
             };
         }
