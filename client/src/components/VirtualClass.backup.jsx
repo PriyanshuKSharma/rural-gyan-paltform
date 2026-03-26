@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import Peer from 'simple-peer';
@@ -118,11 +118,6 @@ const VirtualClass = () => {
   const socketRef = useRef();
   const peersRef = useRef([]);
   const userVideo = useRef();
-  useEffect(() => {
-    if (userVideo.current && stream) {
-      userVideo.current.srcObject = stream;
-    }
-  }, [stream]);
   const streamRef = useRef(null);
   const screenTrackRef = useRef();
   const messagesEndRef = useRef(null);
@@ -144,14 +139,14 @@ const VirtualClass = () => {
 
   useEffect(() => {
     fetchClassData();
-    socketRef.current = io(process.env.REACT_APP_SOCKET_URL || window.location.origin);
+    socketRef.current = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:5000');
     
     // Set up socket event listeners immediately
     socketRef.current.on('connect', () => {
       console.log('Socket connected:', socketRef.current.id);
       
       // Now that socket is connected, request camera access and join class
-      (navigator.mediaDevices||{getUserMedia:()=>Promise.reject(new Error("HTTPS required"))}).getUserMedia({ video: true, audio: true })
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         .then((currentStream) => {
           console.log('Camera access granted');
           setStream(currentStream);
@@ -159,7 +154,7 @@ const VirtualClass = () => {
 
           // Connect to any participants that arrived before stream was ready
           if (pendingParticipantsRef.current.length > 0) {
-            connectToPendingParticipants(pendingParticipantsRef.current, currentStream);
+            connectToPendingParticipants(currentStream);
           }
 
           // Join virtual class after camera is ready and socket is connected
@@ -176,7 +171,6 @@ const VirtualClass = () => {
           toast.error('Camera/microphone access denied. Please allow permissions and refresh.');
           
           // Still join the class even without camera
-          if(pendingParticipantsRef.current.length>0){connectToPendingParticipants(pendingParticipantsRef.current,null);}
           socketRef.current.emit('join-virtual-class', {
             classId,
             userId: user._id,
@@ -194,10 +188,16 @@ const VirtualClass = () => {
 
     // New joiner: initiate offers to all existing participants
     socketRef.current.on('initiate-with-existing', (participants) => {
-      console.log('Initiate with existing:', participants, 'stream ready:', !!streamRef.current);
-      connectToPendingParticipants(participants, streamRef.current);
+      console.log('Initiate with existing:', participants);
+      pendingParticipantsRef.current = participants;
+      if (!streamRef.current) {
+        console.log('Stream not ready yet, will connect once stream is available');
+        return;
+      }
+      connectToPendingParticipants(streamRef.current);
     });
-    // Existing user notified that someone new joined ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â wait for their offer
+
+    // Existing user notified that someone new joined â€” wait for their offer
     socketRef.current.on('participant-joined', (payload) => {
       console.log('Participant joined:', payload);
       toast.success(`${payload.userName} joined`);
@@ -215,7 +215,7 @@ const VirtualClass = () => {
 
     // Receive offer from new joiner, respond with answer
     socketRef.current.on('video-offer', (payload) => {
-console.log('Received video offer from:', payload.fromSocketId, 'userType:', payload.userType);
+      console.log('Received video offer from:', payload.fromSocketId);
       if (peersRef.current.find(p => p.peerID === payload.fromSocketId)) return;
       const peer = addPeer(payload.offer, payload.fromSocketId, streamRef.current);
       peersRef.current.push({
@@ -262,25 +262,6 @@ console.log('Received video offer from:', payload.fromSocketId, 'userType:', pay
     });
 
     // Chat and other events
-    // Teacher force controls
-    socketRef.current.on('force-video-off', () => {
-      console.log('Force video off received');
-      if (stream && stream.getVideoTracks()[0]) {
-        stream.getVideoTracks()[0].enabled = false;
-        setIsVideoEnabled(false);
-        toast.error('Camera turned off by teacher');
-      }
-    });
-
-    socketRef.current.on('force-mute', () => {
-      console.log('Force mute received');
-      if (stream && stream.getAudioTracks()[0]) {
-        stream.getAudioTracks()[0].enabled = false;
-        setIsAudioEnabled(false);
-        toast.error('Microphone muted by teacher');
-      }
-    });
-
     socketRef.current.on('chat-message', (message) => {
       if (message.userId !== user._id) {
         setMessages((msgs) => [...msgs, message]);
@@ -292,7 +273,7 @@ console.log('Received video offer from:', payload.fromSocketId, 'userType:', pay
       console.log('Hand raised:', data);
       setRaisedHands(prev => [...prev, data]);
       if (user.role === 'teacher') {
-toast(`✋ ${data.userName} raised their hand`, { icon: '✋' });
+        toast(`âœ‹ ${data.userName} raised their hand`, { icon: 'âœ‹' });
       }
     });
 
@@ -433,8 +414,8 @@ toast(`✋ ${data.userName} raised their hand`, { icon: '✋' });
     }
   };
 
-  function connectToPendingParticipants(participants, currentStream) {
-    participants.forEach(participant => {
+  function connectToPendingParticipants(currentStream) {
+    pendingParticipantsRef.current.forEach(participant => {
       if (peersRef.current.find(p => p.peerID === participant.socketId)) return;
       const peer = createPeer(participant.socketId, socketRef.current.id, currentStream);
       peersRef.current.push({
@@ -460,7 +441,7 @@ toast(`✋ ${data.userName} raised their hand`, { icon: '✋' });
     const peer = new Peer({
       initiator: true,
       trickle: true,
-      ...(stream ? {stream} : {}),
+      stream,
       config: {
         iceServers: [
           { urls: 'stun:stun.l.google.com:19302' },
@@ -551,7 +532,7 @@ toast(`✋ ${data.userName} raised their hand`, { icon: '✋' });
   const retryCamera = async () => {
     try {
       console.log('Retrying camera access');
-      const currentStream = await (navigator.mediaDevices||{getUserMedia:()=>Promise.reject(new Error("HTTPS required"))}).getUserMedia({ video: true, audio: true });
+      const currentStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       console.log('Camera access granted on retry');
       setStream(currentStream);
       streamRef.current = currentStream;
@@ -594,7 +575,7 @@ toast(`✋ ${data.userName} raised their hand`, { icon: '✋' });
         screenTrackRef.current.stop();
         
         // Get camera stream again
-        const cameraStream = await (navigator.mediaDevices||{getUserMedia:()=>Promise.reject(new Error("HTTPS required"))}).getUserMedia({ video: true, audio: true });
+        const cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         const videoTrack = cameraStream.getVideoTracks()[0];
         
         // Replace track in local stream
@@ -793,7 +774,7 @@ socketRef.current.emit('leave-virtual-class', classId);
               </h1>
               <div className="flex items-center gap-3 mt-1">
                 <span className="text-xs text-indigo-400 font-medium px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">Secure Connection</span>
-•
+                <span className="text-slate-600">â€¢</span>
                 <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
                   <Clock size={14} className="text-purple-400" />
                   {timer}
@@ -815,15 +796,15 @@ socketRef.current.emit('leave-virtual-class', classId);
 
         {/* Video Grid */}
         <div className="flex-1 p-4 overflow-y-auto custom-scrollbar pt-20 pb-24">
-{user.role === 'student' ? (
+          {user.role === 'student' ? (
             // Student view: Teacher video large, others small
             <div className="flex flex-col gap-4 h-full">
               {/* Teacher's large video */}
               {peers.find(p => p.userType === 'teacher') ? (
                 <div className="flex-1 relative">
                   <VideoCard
-                    peer={peers.find(p => p.userType === 'teacher')?.peer}
-                    userName={`👨‍💻 ${peers.find(p => p.userType === 'teacher')?.userName || 'Teacher'}`}
+                    peer={peers.find(p => p.userType === 'teacher').peer}
+                    userName={`👨‍🏫 ${peers.find(p => p.userType === 'teacher').userName || 'Teacher'}`}
                   />
                   {captionsEnabled && currentCaption && (
                     <div className="absolute bottom-20 left-1/2 -translate-x-1/2 max-w-[90%] bg-black/90 px-6 py-3 rounded-lg border border-green-500/50 z-10">
@@ -1038,66 +1019,66 @@ socketRef.current.emit('leave-virtual-class', classId);
 
           {showParticipants && (
             <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-              <div className="space-y-3">
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-cyan-900/20 border border-cyan-500/30">
-                  <div className="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 font-bold text-sm">
+              <div className="space-y-2">
+                <div className="flex items-center gap-3 p-2 rounded bg-cyan-900/20 border border-cyan-500/30">
+                  <div className="w-8 h-8 rounded bg-cyan-500/20 flex items-center justify-center text-cyan-400 font-bold text-xs">
                     {user.fullName.charAt(0)}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-white truncate">{user.fullName} (You)</p>
-                    <p className="text-xs text-cyan-400 font-medium">{user.role.toUpperCase()}</p>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-white">{user.fullName} (You)</p>
+                    <p className="text-[10px] text-cyan-500">{user.role.toUpperCase()}</p>
                   </div>
-                  <Mic size={16} className="text-green-500 flex-shrink-0" />
+                  <Mic size={14} className="text-green-500" />
                 </div>
                 
                 {participants.map((participant, idx) => (
-                  <div key={idx} className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800/50 border border-slate-700/50 transition-all duration-200">
-                    <div className="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold text-sm relative shadow-md">
+                  <div key={idx} className="flex items-center gap-3 p-2 rounded hover:bg-gray-800 border border-transparent hover:border-gray-700 transition-colors">
+                    <div className="w-8 h-8 rounded bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold text-xs relative">
                       {participant.userName?.charAt(0) || '?'}
                       {raisedHands.some(h => h.userId === participant.userId) && (
-                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 text-white text-xs rounded-full flex items-center justify-center font-bold shadow-lg animate-bounce">
-                          ✋
+                        <span className="absolute -top-1 -right-1 text-orange-500 animate-bounce">
+                          âœ‹
                         </span>
                       )}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-slate-200 truncate flex items-center gap-2">
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-300 flex items-center gap-2">
                         {participant.userName || 'Unknown User'}
                         {raisedHands.some(h => h.userId === participant.userId) && (
-                          <span className="text-orange-400 font-bold animate-pulse">✋</span>
+                          <span className="text-orange-500 text-xs animate-pulse">âœ‹</span>
                         )}
                       </p>
-                      <p className="text-xs text-slate-500 font-medium">{participant.userType?.toUpperCase() || 'PARTICIPANT'}</p>
+                      <p className="text-[10px] text-gray-500">{participant.userType?.toUpperCase() || 'PARTICIPANT'}</p>
                     </div>
                     {user.role === 'teacher' && participant.userType === 'student' && (
-                      <div className="flex gap-1 flex-shrink-0">
+                      <div className="flex gap-1">
                         <button 
                           onClick={() => muteStudent(participant.socketId)}
-                          className="p-2 text-orange-400 hover:bg-orange-500/20 rounded-lg hover:scale-105 transition-all"
+                          className="p-1 text-orange-500 hover:bg-orange-500/20 rounded"
                           title="Mute Student"
                         >
-                          <VolumeX size={16} />
+                          <VolumeX size={14} />
                         </button>
                         <button 
                           onClick={() => turnOffStudentVideo(participant.socketId)}
-                          className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg hover:scale-105 transition-all"
+                          className="p-1 text-blue-500 hover:bg-blue-500/20 rounded"
                           title="Turn Off Camera"
                         >
-                          <VideoOff size={16} />
+                          <VideoOff size={14} />
                         </button>
                         <button 
                           onClick={() => markAttendance(participant.userId, true)}
-                          className="p-2 text-green-400 hover:bg-green-500/20 rounded-lg hover:scale-105 transition-all"
+                          className="p-1 text-green-500 hover:bg-green-500/20 rounded"
                           title="Mark Present"
                         >
-                          <CheckCircle size={16} />
+                          <CheckCircle size={14} />
                         </button>
                         <button 
                           onClick={() => markAttendance(participant.userId, false)}
-                          className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg hover:scale-105 transition-all"
+                          className="p-1 text-red-500 hover:bg-red-500/20 rounded"
                           title="Mark Absent"
                         >
-                          <XCircle size={16} />
+                          <XCircle size={14} />
                         </button>
                       </div>
                     )}
@@ -1136,3 +1117,4 @@ socketRef.current.emit('leave-virtual-class', classId);
 };
 
 export default VirtualClass;
+

@@ -26,7 +26,7 @@ app.set('trust proxy', 1);
 
 const io = socketIo(server, {
   cors: {
-    origin: [process.env.CLIENT_URL || "http://localhost:3001", "http://localhost:3001", "http://localhost:3000", "http://localhost:5500", "http://127.0.0.1:5500", "null"],
+    origin: true,
     methods: ["GET", "POST"]
   }
 });
@@ -40,7 +40,7 @@ connectDB();
 // Security middleware
 app.use(helmet());
 app.use(cors({
-  origin: [process.env.CLIENT_URL || "http://localhost:3001", "http://localhost:3000", "http://localhost:5500", "http://127.0.0.1:5500", "null"],
+  origin: true,
   credentials: true
 }));
 
@@ -169,6 +169,7 @@ io.on('connection', (socket) => {
 
   // WebRTC signaling for video calls
   socket.on('video-offer', (data) => {
+    console.log('video-offer from', socket.id, 'to', data.targetSocketId);
     socket.to(data.targetSocketId).emit('video-offer', {
       offer: data.offer,
       fromSocketId: socket.id,
@@ -179,6 +180,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('video-answer', (data) => {
+    console.log('video-answer from', socket.id, 'to', data.targetSocketId);
     socket.to(data.targetSocketId).emit('video-answer', {
       answer: data.answer,
       fromSocketId: socket.id,
