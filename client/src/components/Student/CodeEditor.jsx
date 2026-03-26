@@ -7,8 +7,15 @@ import toast from 'react-hot-toast';
 
 const CodeEditor = () => {
   const { t } = useTranslation();
-  const [code, setCode] = useState('// Welcome to the Virtual Code Editor\nconsole.log("Hello, World!");');
+  const defaultCode = {
+    javascript: '// Welcome to the Virtual Code Editor\nconsole.log("Hello, World!");',
+    python: '# Welcome to the Virtual Code Editor\nprint("Hello, World!")',
+    java: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}',
+    cpp: '#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}'
+  };
+
   const [language, setLanguage] = useState('javascript');
+  const [code, setCode] = useState(defaultCode['javascript']);
   const [output, setOutput] = useState('');
   const [isRunning, setIsRunning] = useState(false);
   const [theme, setTheme] = useState('vs-dark');
@@ -24,8 +31,10 @@ const CodeEditor = () => {
     setIsRunning(true);
     try {
       const response = await studentAPI.runCode(code, language);
-      setOutput(response.data.data.output);
-      toast.success('Code executed successfully');
+      const { output, error, status } = response.data.data;
+      setOutput(output || error || 'No output');
+      if (status === 'success') toast.success('Code executed successfully');
+      else toast.error('Code execution failed');
     } catch (error) {
       setOutput('Error: Failed to execute code');
       toast.error('Failed to run code');
@@ -62,7 +71,7 @@ const CodeEditor = () => {
           <h1 className="text-xl font-bold text-gray-900 dark:text-white ml-2">Virtual Code Editor</h1>
           <select
             value={language}
-            onChange={(e) => setLanguage(e.target.value)}
+            onChange={(e) => { setLanguage(e.target.value); setCode(defaultCode[e.target.value]); setOutput(''); }}
             className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none"
           >
             {languages.map((lang) => (
