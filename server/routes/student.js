@@ -296,49 +296,42 @@ router.post('/run-code', [
 
     const { code, language } = req.body;
 
-    // Map language to Piston runtime
+    // Judge0 language IDs
     const languageMap = {
-      'javascript': { language: 'javascript', version: '18.15.0' },
-      'python': { language: 'python', version: '3.10.0' },
-      'java': { language: 'java', version: '15.0.2' },
-      'cpp': { language: 'c++', version: '10.2.0' },
-      'sql': { language: 'sqlite3', version: '3.36.0' } // Piston supports sqlite3
+      'javascript': 93,
+      'python': 100,
+      'java': 91,
+      'cpp': 54,
+      'sql': 82
     };
 
-    const runtime = languageMap[language];
-    if (!runtime) {
+    const languageId = languageMap[language];
+    if (!languageId) {
       return res.status(400).json({ message: 'Unsupported language' });
     }
 
-    try {
-      const response = await axios.post('https://emkc.org/api/v2/piston/execute', {
-        language: runtime.language,
-        version: runtime.version,
-        files: [
-          {
-            content: code
-          }
-        ]
-      });
+    const response = await axios.post(
+      'https://ce.judge0.com/submissions?base64_encoded=false&wait=true',
+      { source_code: code, language_id: languageId },
+      { headers: { 'Content-Type': 'application/json' }, timeout: 15000 }
+    );
 
-      const { run } = response.data;
-      
-      res.json({
-        success: true,
-        data: {
-          output: run.output,
-          executionTime: '0.5s', // Piston doesn't always return time in simple format, mock for now or extract
-          status: run.code === 0 ? 'success' : 'error'
-        }
-      });
-    } catch (pistonError) {
-      console.error('Piston API Error:', pistonError.message);
-      // Fallback or error
-      res.status(503).json({ message: 'Code execution service unavailable', error: pistonError.message });
-    }
+    const { stdout, stderr, compile_output, status } = response.data;
+    const output = stdout || compile_output || stderr || '';
+    const isSuccess = status?.id === 3; // 3 = Accepted
+
+    res.json({
+      success: true,
+      data: {
+        output,
+        error: isSuccess ? null : (stderr || compile_output || status?.description || ''),
+        status: isSuccess ? 'success' : 'error'
+      }
+    });
 
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Judge0 Error:', error.message);
+    res.status(503).json({ message: 'Code execution service unavailable', error: error.message });
   }
 });
 
